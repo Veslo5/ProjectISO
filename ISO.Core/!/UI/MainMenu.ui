@@ -1,0 +1,30 @@
+{
+  "Texts": [
+    {
+      "Name": "Text1",
+      "Rotation": 0,
+      "X": 50,
+      "Y": 80,
+      "ScaleX": 1,
+      "ScaleY": 1,
+      "IsVisible": true,
+      "R": 255,
+      "G": 255,
+      "B": 255,
+      "Text": "Created with Monogame <3"
+    },
+    {
+      "Name": "Text2",
+      "Rotation": 0,
+      "X": 150,
+      "Y": 100,
+      "ScaleX": 1,
+      "ScaleY": 1,
+      "IsVisible": true,
+      "R": 255,
+      "G": 255,
+      "B": 255,
+      "Text": "Dummy text 2"
+    }
+  ]
+}
