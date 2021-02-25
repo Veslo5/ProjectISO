@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using ISO.Core.Contents;
 using ISO.Core.Graphics;
 using ISO.Core.Logging;
 using ISO.Core.Settings;
@@ -34,6 +35,11 @@ namespace ISO.Core.StateManager
         /// </summary>
         public string UIRootPath { get; set; }
 
+        /// <summary>
+        /// Content
+        /// </summary>
+        public new ISOContentManager Content { get;set;}  
+
         public ISOGame(Config config)
         {
             SceneManager = new SceneManager(this);
@@ -41,7 +47,9 @@ namespace ISO.Core.StateManager
             ScriptRoothPath = config.ScriptPath;
             UIRootPath = config.UIPath;
             
+            Content = new ISOContentManager(base.Content.ServiceProvider);
             Content.RootDirectory = "Content";
+
             IsMouseVisible = true;
         }
 

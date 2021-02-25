@@ -30,4 +30,7 @@
   <ItemGroup>
     <ProjectReference Include="..\ISO.Core\ISO.Core.csproj" />
   </ItemGroup>
+  <Target Name="PostBuild" AfterTargets="PostBuildEvent">
+    <Exec Command="cd $(TargetDir)&#xD;&#xA;tar -a -c -f Content.zip Content&#xD;&#xA;RD /S /Q &quot;Content\&quot;" />
+  </Target>
 </Project>
