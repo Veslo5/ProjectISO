@@ -14,27 +14,23 @@ namespace ProjectISO.Levels
 {
     public class ISO_Loader01 : Scene
     {
-        public ISO_Loader01(string name, ISOGame game, bool enableLuaScripting) : base(name, game, enableLuaScripting)
+        public ISO_Loader01(string name, int id, ISOGame game, bool enableLuaScripting) : base(name, id, game, enableLuaScripting)
         {
         }
-
-
-        Sprite testSprite;
+        
         ISORectagle testRectangle;
 
 
         public override void Initialize()
         {
             base.Initialize();
-            UI.UILoader.LoadJson(Name);
+            UI.UILoader.LoadJson(ID);
         }
 
         public override void LoadContent()
         {
             base.LoadContent();
-
-
-            testSprite = new Sprite(RawDataLoader.GetTextureFromFile(Game.GraphicsDevice, "test.jpg"));
+            
 
             testRectangle = new ISORectagle(Color.Red, Game.GraphicsDevice, new Rectangle(0, 0, 100, 100));
 

@@ -44,6 +44,11 @@ namespace ISO.Core.StateManager
         public string Name { get; }
 
         /// <summary>
+        /// Scene ID from db
+        /// </summary>
+        public int ID { get; }
+
+        /// <summary>
         /// Spritebatch for rendering
         /// </summary>
         public SpriteBatch SpriteBatch { get; set; }
@@ -83,16 +88,17 @@ namespace ISO.Core.StateManager
         /// </summary>
         public ISOTiledManager Map { get; set; }
 
-        public Scene(string name, ISOGame game, bool enableLuaScripting)
+        public Scene(string name, int id, ISOGame game, bool enableLuaScripting)
         {
             Name = name;
+            ID = id;
             Game = game;
 
-            LuaProvider = new LuaProvider(game.ScriptRoothPath, enableLuaScripting);
+            LuaProvider = new LuaProvider(game.Config.DataPath, id, enableLuaScripting);
             LuaProvider.AddScript(Name);
 
-            Map = new ISOTiledManager("sdExport");
-            UI = new UIManager(game.UIRootPath);
+            Map = new ISOTiledManager(id, game.Config.DataPath);
+            UI = new UIManager(ID, Game.Config.DataPath);
             Corountines = new CorountineManager();
         }
 
@@ -111,17 +117,16 @@ namespace ISO.Core.StateManager
             SpriteBatch = new SpriteBatch(Game.GraphicsDevice);
             Camera = new OrthographicCamera(Game.GraphicsDevice.Viewport);
             UICamera = new OrthographicCamera(Game.GraphicsDevice.Viewport);
-            Map.LoadContent(Game.GraphicsDevice, Camera);
+            Map.LoadContent(Game.GraphicsDevice, Camera, Game.Content);
             UI.LoadContent(Game);
             LuaProvider.InvokeFunctionFromScript(Name, LOADCONTENT_NAME);
 
         }
 
         public virtual void Update(GameTime gameTime)
-        {            
-            Camera.Update(); //TODO: Optimize and cache vector (change only when device change resolution)
+        {
+            Camera.Update(); //TODO: Optimize and cache vector (change only when device change resolution)            
 
-            UICamera.Position = new Vector2(Game.Graphics.CurrentWidth / 2, Game.Graphics.CurrentHeight / 2);
             UICamera.Update(); //TODO: Optimize and cache vector (change only when device change resolution)
 
             Map.Update();
@@ -141,7 +146,7 @@ namespace ISO.Core.StateManager
             SpriteBatch.Begin(transformMatrix: UICamera.Projection);
             UI.Draw(gameTime, SpriteBatch);
             SpriteBatch.End();
-            
+
             LuaProvider.InvokeFunctionFromScript(Name, DRAW_NAME);
 
             Game.Window.Title = "FPS " + (1 / gameTime.ElapsedGameTime.TotalSeconds);

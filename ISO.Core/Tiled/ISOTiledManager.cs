@@ -1,5 +1,6 @@
 ﻿using ISO.Core.Camera;
 using ISO.Core.DataLoader;
+using ISO.Core.DataLoader.SqliteClient;
 using ISO.Core.Logging;
 using ISO.Core.Sprites.Atlas;
 using ISO.Core.Sprites.Tile;
@@ -22,8 +23,6 @@ namespace ISO.Core.Tiled
     public class ISOTiledManager
     {
 
-        public string Name { get; set; }
-
         private ISOTiledMap MapMetadata { get; set; }
         private ISOTiledPicture MapImage { get; set; }
 
@@ -32,28 +31,34 @@ namespace ISO.Core.Tiled
         OrthographicCamera Camera { get; set; }
 
         private Atlas ImageAtlas { get; set; }
+        private int ID { get; }
+        private string Path { get; }
 
         Stopwatch stopWatch = new Stopwatch();
 
-        public ISOTiledManager(string name)
+        public ISOTiledManager(int ID, string path)
         {
-            Name = name + ".json";
+            this.ID = ID;
+            Path = path;
         }
 
-        List<Vector2> list;
-
-        public void LoadContent(GraphicsDevice device, OrthographicCamera camera)
+        public void LoadContent(GraphicsDevice device, OrthographicCamera camera , ISOContentManager content)
         {
             Camera = camera;
+
+            string filemapJson = null;
+            string filepicJson = null;
+
+            using (var context = new ISODbContext(Path))
+            {
+                filemapJson = context.LoadMapDataByType(ID, MapDataTypes.MAP).DATA;
+                MapMetadata = JsonConvert.DeserializeObject<ISOTiledMap>(filemapJson);
+
+                filepicJson = context.LoadMapDataByType(ID, MapDataTypes.PICTURE).DATA;
+                MapImage = JsonConvert.DeserializeObject<ISOTiledPicture>(filepicJson);
+            }
             
-            var filemapJson = File.ReadAllText(AppDomain.CurrentDomain.BaseDirectory + "\\" + Name);
-            MapMetadata = JsonConvert.DeserializeObject<ISOTiledMap>(filemapJson);
-
-            var filepicJson = File.ReadAllText(AppDomain.CurrentDomain.BaseDirectory + "\\" + MapMetadata.tilesets[0].source);
-            MapImage = JsonConvert.DeserializeObject<ISOTiledPicture>(filepicJson);
-
-
-            var image = RawDataLoader.GetTextureFromFile(device, AppDomain.CurrentDomain.BaseDirectory + "\\" + MapImage.image);
+            var image = content.Load<Texture2D>("MAP" + "/GROUND/" + System.IO.Path.GetFileNameWithoutExtension(MapImage.image));                
 
             ImageAtlas = new Atlas(image, MapImage.columns, MapImage.imageheight / MapImage.tileheight);
 
@@ -193,12 +198,12 @@ namespace ISO.Core.Tiled
 
             var cameraPosOnWorldTopLeft = Camera.ScreenToWorldSpace(Camera.Position);
             var tileOnTopLeft = GetTileOnWorld((int)cameraPosOnWorldTopLeft.X, (int)cameraPosOnWorldTopLeft.Y);
-           
+
             var cameraPosOnWorldBottomRight = Camera.ScreenToWorldSpace(new Vector2(Camera.Position.X + 800, Camera.Position.Y + 600));
             var tileOnPosBottomRight = GetTileOnWorld((int)cameraPosOnWorldBottomRight.X, (int)cameraPosOnWorldBottomRight.Y);
 
-          Log.Write(cameraPosOnWorldTopLeft.ToString());
-          Log.Write(cameraPosOnWorldBottomRight.ToString());
+            Log.Write(cameraPosOnWorldTopLeft.ToString());
+            Log.Write(cameraPosOnWorldBottomRight.ToString());
 
 
             DrawTiles(tileOnTopLeft, tileOnPosBottomRight, time, batch);
@@ -213,7 +218,7 @@ namespace ISO.Core.Tiled
 
 
         }
-        
+
 
         public void Update()
         {

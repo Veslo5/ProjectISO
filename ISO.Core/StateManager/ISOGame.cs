@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
-using ISO.Core.Contents;
+using ISO.Core.DataLoader;
 using ISO.Core.Graphics;
 using ISO.Core.Logging;
 using ISO.Core.Settings;
@@ -26,27 +26,21 @@ namespace ISO.Core.StateManager
         public SceneManager SceneManager { get; set; }
 
         /// <summary>
-        /// Scripts root path
-        /// </summary>
-        public string ScriptRoothPath { get; set; }
-
-        /// <summary>
-        /// UI root path
-        /// </summary>
-        public string UIRootPath { get; set; }
-
-        /// <summary>
         /// Content
         /// </summary>
-        public new ISOContentManager Content { get;set;}  
+        public new ISOContentManager Content { get; set; }
+
+        /// <summary>
+        /// App configuration
+        /// </summary>
+        public Config Config { get; }
 
         public ISOGame(Config config)
         {
+            Config = config;
             SceneManager = new SceneManager(this);
             Graphics = new ISOGraphicsManager(this, config.Width, config.Height, config.Vsync);
-            ScriptRoothPath = config.ScriptPath;
-            UIRootPath = config.UIPath;
-            
+
             Content = new ISOContentManager(base.Content.ServiceProvider);
             Content.RootDirectory = "Content";
 
@@ -57,7 +51,7 @@ namespace ISO.Core.StateManager
         /// Initialize
         /// </summary>
         protected override void Initialize()
-        {            
+        {
             Graphics.ChangeResolution(Graphics.CurrentWidth, Graphics.CurrentHeight, false);
 
             SceneManager.CurrentScene.Initialize();
@@ -68,7 +62,7 @@ namespace ISO.Core.StateManager
         /// LoadContent 
         /// </summary>
         protected override void LoadContent()
-        {           
+        {
             SceneManager.CurrentScene.LoadContent();
         }
 

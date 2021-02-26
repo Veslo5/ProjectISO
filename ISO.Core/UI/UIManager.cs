@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.Text;
 using System.Linq;
 using ISO.Core.Logging;
+using ISO.Core.Settings;
 
 namespace ISO.Core.UI
 {
@@ -15,12 +16,16 @@ namespace ISO.Core.UI
         private List<IUI> UIHolder { get; set; }
 
         public UILoader UILoader { get; set; }
+        
+        public int MapID { get;}
 
-        public UIManager(string path)
+        public UIManager(int ID, string dbPath)
         {
             Log.Info("Creating UI manager");
+            MapID = ID;
+
             UIHolder = new List<IUI>();
-            UILoader = new UILoader(path, this);
+            UILoader = new UILoader(this, dbPath);
         }
 
         public void AddUI(IUI uiElement)

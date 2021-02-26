@@ -30,6 +30,17 @@
   <ItemGroup>
     <ProjectReference Include="..\ISO.Core\ISO.Core.csproj" />
   </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Data\" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Update="config.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Data\galaxy_data.DAT">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
   <Target Name="PostBuild" AfterTargets="PostBuildEvent">
     <Exec Command="cd $(TargetDir)&#xD;&#xA;tar -a -c -f Content.zip Content&#xD;&#xA;RD /S /Q &quot;Content\&quot;" />
   </Target>

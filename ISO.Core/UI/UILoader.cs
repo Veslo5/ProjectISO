@@ -1,4 +1,6 @@
-﻿using ISO.Core.Logging;
+﻿using ISO.Core.DataLoader.SqliteClient;
+using ISO.Core.DataLoader.SqliteClient.Contracts;
+using ISO.Core.Logging;
 using ISO.Core.UI.Elements;
 using ISO.Core.UI.JSONModels;
 using Microsoft.Xna.Framework;
@@ -12,23 +14,15 @@ namespace ISO.Core.UI
 {
     public class UILoader
     {
-        private string DefaultPath { get; }
         private UIManager Manager { get; }
+        private string Dbpath { get; }
 
-        public UILoader(string path, UIManager manager)
+        public UILoader(UIManager manager, string dbpath)
         {
             Log.Info("UILoader loaded.");
 
-            if (string.IsNullOrEmpty(path))
-            {
-                DefaultPath = AppDomain.CurrentDomain.BaseDirectory + "\\UI";
-            }
-            else
-            {
-                DefaultPath = path;
-            }
-
             Manager = manager;
+            Dbpath = dbpath;
         }
 
 
@@ -36,18 +30,23 @@ namespace ISO.Core.UI
         /// Loads UI json and create UI elements from it
         /// </summary>
         /// <param name="name"></param>
-        public void LoadJson(string name)
+        public void LoadJson(int mapID)
         {
-            var filePath = DefaultPath + "\\" + name + ".ui";
-            Log.Info("Loading UI file " + filePath);
+            ISOUI uiData = null;
 
-            if (!File.Exists(filePath))
+            Log.Info("Loading UI file " + mapID);
+            using (var context = new ISODbContext(Dbpath))
+            {
+                uiData = context.LoadTForMap<ISOUI>(mapID);
+            }
+
+            if (uiData == null)
             {
                 Log.Warning("UI file was not found. Continuing without UI.");
                 return;
             }
 
-            var jsonString = File.ReadAllText(filePath);
+            var jsonString = uiData.DATA;
 
             var deserializedJSON = JsonConvert.DeserializeObject<UIRoot>(jsonString);
 
@@ -56,6 +55,7 @@ namespace ISO.Core.UI
                 CreateText(item);
             }
 
+            //TODO: clean uiData to null            
         }
 
         /// <summary>
@@ -66,7 +66,7 @@ namespace ISO.Core.UI
         {
             var ISOTextitem = new ISOText(text.Name, text.Text);
             ISOTextitem.Position = new Vector2(text.X, text.Y);
-            ISOTextitem.Color = new Color(text.R, text.G, text.B);            
+            ISOTextitem.Color = new Color(text.R, text.G, text.B);
 
             Manager.AddUI(ISOTextitem);
 

@@ -20,7 +20,10 @@ namespace ISO.Core.Settings
             Log.Info("Loading config from path " + path);
 
             var file = File.ReadAllText(path);
-            return JsonConvert.DeserializeObject<Config>(file);
+            var config = JsonConvert.DeserializeObject<Config>(file);
+            config.DataPath = AppDomain.CurrentDomain.BaseDirectory + "Data\\galaxy_data.DAT";
+
+            return config;
         }
     }
 }

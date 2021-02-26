@@ -55,7 +55,7 @@ namespace ISO.Core.Camera
         /// <param name="view">viewport of camera</param>
         public OrthographicCamera(Viewport view)
         {
-            viewport = view;
+            viewport = view;            
         }
 
         /// <summary>
@@ -80,7 +80,12 @@ namespace ISO.Core.Camera
                 Matrix.CreateRotationZ(Rotation) *
                 Matrix.CreateScale(new Vector3(Zooom,Zooom,1)) *
             //Matrix.CreateTranslation(new Vector3(viewport.Width / 2, viewport.Height / 2, 0));
-            Matrix.CreateTranslation(new Vector3(0, 0, 0));
+                Matrix.CreateTranslation(new Vector3(0, 0, 0));
+        }
+
+        public void ReCenter()
+        {
+            Position =- new Vector2(viewport.X / 2, viewport.Y / 2);
         }
 
         public Vector2 ScreenToWorldSpace(in Vector2 point)

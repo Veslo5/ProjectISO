@@ -1,4 +1,6 @@
-﻿using ISO.Core.ErrorHandling;
+﻿using ISO.Core.DataLoader.SqliteClient;
+using ISO.Core.DataLoader.SqliteClient.Contracts;
+using ISO.Core.ErrorHandling;
 using ISO.Core.Logging;
 using MoonSharp.Interpreter;
 using System;
@@ -15,28 +17,17 @@ namespace ISO.Core.Scripting
         /// </summary>
         public List<IsoScript> ScriptHolder { get; set; }
 
-        /// <summary>
-        /// Default path to scripts
-        /// </summary>
-        public string DefaultPath { get; private set; }
 
         public bool IsEnabled { get; set; }
+        private string Path { get; }
+        private int Id { get; }
 
-
-        public LuaProvider(string path, bool enabled = false)
+        public LuaProvider(string path, int id, bool enabled = false)
         {
             ScriptHolder = new List<IsoScript>();
-            IsEnabled = enabled;            
-
-            //default path system
-            if (string.IsNullOrEmpty(path))
-            {
-                DefaultPath = AppDomain.CurrentDomain.BaseDirectory + "\\scripts";
-            }
-            else
-            {
-                DefaultPath = path;
-            }
+            IsEnabled = enabled;
+            Path = path;
+            Id = id;
         }
 
         /// <summary>
@@ -58,7 +49,20 @@ namespace ISO.Core.Scripting
             script.Name = name;
             script.Options.DebugPrint = output => Log.Script(output);
 
-            script.LastLoadedScriptValue = script.LoadFile(DefaultPath + "\\" + name + ".lua").Function.Call();
+            SCRIPT dbScript = null;
+
+            using (var context = new ISODbContext(Path))
+            {
+                dbScript = context.LoadTForMap<SCRIPT>(Id);
+            }
+
+            if (dbScript == null)
+            {
+                Log.Warning("Script not found... continuing without script");
+                return;
+            }
+
+            script.LastLoadedScriptValue = script.LoadString(dbScript.DATA).Function.Call();
 
             ScriptHolder.Add(script);
         }
@@ -72,7 +76,15 @@ namespace ISO.Core.Scripting
             Log.Warning("reloading script " + scriptName);
 
             var script = ScriptHolder.FirstOrDefault(x => x.Name == scriptName);
-            script.LastLoadedScriptValue = script.LoadFile(DefaultPath + "\\" + scriptName + ".lua").Function.Call();
+
+            SCRIPT dbScript = null;
+
+            using (var context = new ISODbContext(Path))
+            {
+                dbScript = context.LoadTForMap<SCRIPT>(Id);
+            }
+
+            script.LastLoadedScriptValue = script.LoadString(dbScript.DATA).Function.Call();
         }
 
 
