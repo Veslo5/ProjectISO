@@ -24,6 +24,7 @@ namespace ProjectISO.Levels
         public override void Initialize()
         {
             base.Initialize();
+            Game.Window.AllowUserResizing = true;
             UI.UILoader.LoadJson(ID);
         }
 

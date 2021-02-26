@@ -42,7 +42,7 @@ namespace ISO.Core.Tiled
             Path = path;
         }
 
-        public void LoadContent(GraphicsDevice device, OrthographicCamera camera , ISOContentManager content)
+        public void LoadContent(GraphicsDevice device, OrthographicCamera camera, ISOContentManager content)
         {
             Camera = camera;
 
@@ -57,8 +57,8 @@ namespace ISO.Core.Tiled
                 filepicJson = context.LoadMapDataByType(ID, MapDataTypes.PICTURE).DATA;
                 MapImage = JsonConvert.DeserializeObject<ISOTiledPicture>(filepicJson);
             }
-            
-            var image = content.Load<Texture2D>("MAP" + "/GROUND/" + System.IO.Path.GetFileNameWithoutExtension(MapImage.image));                
+
+            var image = content.Load<Texture2D>("MAP" + "/GROUND/" + System.IO.Path.GetFileNameWithoutExtension(MapImage.image));
 
             ImageAtlas = new Atlas(image, MapImage.columns, MapImage.imageheight / MapImage.tileheight);
 
@@ -196,15 +196,14 @@ namespace ISO.Core.Tiled
             //    }
             //}
 
-            var cameraPosOnWorldTopLeft = Camera.ScreenToWorldSpace(Camera.Position);
+            var cameraPosOnWorldTopLeft = Camera.ScreenToWorldSpace(new Vector2(-128,-64));
             var tileOnTopLeft = GetTileOnWorld((int)cameraPosOnWorldTopLeft.X, (int)cameraPosOnWorldTopLeft.Y);
 
-            var cameraPosOnWorldBottomRight = Camera.ScreenToWorldSpace(new Vector2(Camera.Position.X + 800, Camera.Position.Y + 600));
+            var cameraPosOnWorldBottomRight = Camera.ScreenToWorldSpace(new Vector2(Camera.viewport.Width + 128, Camera.viewport.Height + 64));
             var tileOnPosBottomRight = GetTileOnWorld((int)cameraPosOnWorldBottomRight.X, (int)cameraPosOnWorldBottomRight.Y);
 
-            Log.Write(cameraPosOnWorldTopLeft.ToString());
-            Log.Write(cameraPosOnWorldBottomRight.ToString());
 
+            //Log.Write(tileOnTopLeft.ToString() + " " + cameraPosOnWorldTopLeft.ToString());
 
             DrawTiles(tileOnTopLeft, tileOnPosBottomRight, time, batch);
 
@@ -232,12 +231,11 @@ namespace ISO.Core.Tiled
             {
                 var position = Camera.ScreenToWorldSpace(state.Position.ToVector2());
                 var vec = GetTileOnWorld((int)position.X, (int)position.Y);
-                Log.Write(vec.X + " " + vec.Y);
                 var tile = GetTileOnWorldPosition((int)position.X, (int)position.Y);
+                Log.Write(vec.ToString() + " " + position.ToString());
                 if (tile != null)
                 {
                     tile.Color = Color.Red;
-
                 }
             }
 

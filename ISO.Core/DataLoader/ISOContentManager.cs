@@ -14,11 +14,17 @@ namespace ISO.Core.DataLoader
 
         }
 
+        /// <summary>
+        /// Possibility to open stream from ZIP
+        /// </summary>
+        /// <param name="assetName">asset name with path</param>
+        /// <returns></returns>
         protected override Stream OpenStream(string assetName)
         {
             MemoryStream stream = null;
 
             var xnbName = RootDirectory + "/" + assetName + ".xnb";
+
             using (ZipArchive zip = ZipFile.Open(RootDirectory + ".zip", ZipArchiveMode.Read))
             {
                 foreach (ZipArchiveEntry entry in zip.Entries)

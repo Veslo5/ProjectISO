@@ -14,39 +14,67 @@ namespace ISO.Core.Camera
         public Viewport viewport;
         private Vector2 center;
 
-        private float zoom = 1;
-        private float rotation = 0;
 
-        public Vector2 Position { get; set; } = new Vector2(0,0);
+        public bool updateMetrix { get; set; } = true;
+
+
+        private Vector2 _position = new Vector2(0, 0);
+
+        public Vector2 Position
+        {
+            get { return _position; }
+            set
+            {
+                _position = value;
+                updateMetrix = true;
+            }
+        }
+
 
         /// <summary>
         /// Camera projection
         /// </summary>
         public Matrix Projection { get; set; }
-        
+
         /// <summary>
         /// Camera zoom
         /// </summary>
+        private float zoom = 1;
+
         public float Zooom
         {
             get { return zoom; }
             set
             {
                 zoom = value;
-                if (zoom < 0.1f)
+
+                if (zoom < 0.5f)
                 {
-                    zoom = 0.1f;
+                    zoom = 0.5f;
                 }
+
+                if (zoom > 1.5f)
+                {
+                    zoom = 1.5f;
+                }
+
+                updateMetrix = true;
             }
         }
 
         /// <summary>
         /// Rotation of camera view
         /// </summary>
+        private float rotation = 0;
+
         public float Rotation
         {
             get { return rotation; }
-            set { rotation = value; }
+            set
+            {
+                rotation = value;
+                updateMetrix = true;
+            }
         }
 
         /// <summary>
@@ -55,7 +83,7 @@ namespace ISO.Core.Camera
         /// <param name="view">viewport of camera</param>
         public OrthographicCamera(Viewport view)
         {
-            viewport = view;            
+            viewport = view;
         }
 
         /// <summary>
@@ -65,6 +93,7 @@ namespace ISO.Core.Camera
         public void OnResolutionChange(Viewport view)
         {
             viewport = view;
+            updateMetrix = true;
         }
 
         /// <summary>
@@ -73,19 +102,25 @@ namespace ISO.Core.Camera
         /// <param name="position"></param>
         public void Update()
         {
-            center = new Vector2(Position.X, Position.Y);
+            if (updateMetrix == true)
+            {
+                center = new Vector2(Position.X, Position.Y);
 
-            Projection = 
-                Matrix.CreateTranslation(new Vector3(-center.X, -center.Y, 0)) *
-                Matrix.CreateRotationZ(Rotation) *
-                Matrix.CreateScale(new Vector3(Zooom,Zooom,1)) *
-            //Matrix.CreateTranslation(new Vector3(viewport.Width / 2, viewport.Height / 2, 0));
+                Projection =
+                    Matrix.CreateTranslation(new Vector3(-center.X, -center.Y, 0)) *
+                    Matrix.CreateRotationZ(Rotation) *
+                    Matrix.CreateScale(new Vector3(Zooom, Zooom, 1)) *
+                //Matrix.CreateTranslation(new Vector3(viewport.Width / 2, viewport.Height / 2, 0));
                 Matrix.CreateTranslation(new Vector3(0, 0, 0));
+
+                updateMetrix = false;
+            }
         }
 
         public void ReCenter()
         {
-            Position =- new Vector2(viewport.X / 2, viewport.Y / 2);
+            Position -= new Vector2(viewport.X / 2, viewport.Y / 2);
+            updateMetrix = true;
         }
 
         public Vector2 ScreenToWorldSpace(in Vector2 point)
@@ -104,6 +139,7 @@ namespace ISO.Core.Camera
         {
             zoom = 1;
             rotation = 0;
+            updateMetrix = true;
         }
 
     }

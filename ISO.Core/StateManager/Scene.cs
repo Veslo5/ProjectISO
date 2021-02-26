@@ -106,9 +106,11 @@ namespace ISO.Core.StateManager
         {
             Log.Info("Initializing scene " + Name);
             this.Game.GraphicsDevice.DeviceReset += GraphicsDevice_DeviceReset;
+            this.Game.Window.ClientSizeChanged += Window_ClientSizeChanged;
             LuaProvider.InvokeFunctionFromScript(Name, INIT_NAME);
         }
 
+        
 
         public virtual void LoadContent()
         {
@@ -172,6 +174,13 @@ namespace ISO.Core.StateManager
             Camera.OnResolutionChange(Game.GraphicsDevice.Viewport);
             UICamera.OnResolutionChange(Game.GraphicsDevice.Viewport);
 
+        }
+
+
+        private void Window_ClientSizeChanged(object sender, EventArgs e)
+        {
+            Camera.OnResolutionChange(Game.GraphicsDevice.Viewport);
+            UICamera.OnResolutionChange(Game.GraphicsDevice.Viewport);
         }
 
         #endregion
