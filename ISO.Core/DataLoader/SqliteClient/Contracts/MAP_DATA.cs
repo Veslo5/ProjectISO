@@ -14,4 +14,11 @@ namespace ISO.Core.DataLoader.SqliteClient.Contracts
         public string DATA { get; set; }
 
     }
+
+    public enum MapDataTypes
+    {
+        MAP = 0,
+        PICTURE = 1
+    }
+
 }

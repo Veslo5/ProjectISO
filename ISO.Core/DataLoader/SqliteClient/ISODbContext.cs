@@ -14,6 +14,10 @@ namespace ISO.Core.DataLoader.SqliteClient
         {
         }
 
+        public ISODbContext(string path, SQLiteOpenFlags openFlags) : base(path, openFlags, false)
+        {
+        }
+
         public void MigrateTables()
         {
             this.CreateTable<LOCATION>();
@@ -50,9 +54,5 @@ namespace ISO.Core.DataLoader.SqliteClient
 
     }
 
-    public enum MapDataTypes
-    {
-        MAP = 0,
-        PICTURE = 1
-    }
+   
 }

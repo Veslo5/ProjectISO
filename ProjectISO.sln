@@ -7,6 +7,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ProjectISO", "ProjectISO\Pr
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ISO.Core", "ISO.Core\ISO.Core.csproj", "{1E4701F2-69A3-4AC3-955A-93C2D8B58C70}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ISO.DB.CLM", "ISO.DB.CommandLineManager\ISO.DB.CLM.csproj", "{33429012-2CD7-48FC-95F6-424E4155202D}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -21,6 +23,10 @@ Global
 		{1E4701F2-69A3-4AC3-955A-93C2D8B58C70}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{1E4701F2-69A3-4AC3-955A-93C2D8B58C70}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{1E4701F2-69A3-4AC3-955A-93C2D8B58C70}.Release|Any CPU.Build.0 = Release|Any CPU
+		{33429012-2CD7-48FC-95F6-424E4155202D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{33429012-2CD7-48FC-95F6-424E4155202D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{33429012-2CD7-48FC-95F6-424E4155202D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{33429012-2CD7-48FC-95F6-424E4155202D}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -1,6 +1,7 @@
 ﻿using ISO.Core.Camera;
 using ISO.Core.DataLoader;
 using ISO.Core.DataLoader.SqliteClient;
+using ISO.Core.DataLoader.SqliteClient.Contracts;
 using ISO.Core.Logging;
 using ISO.Core.Sprites.Atlas;
 using ISO.Core.Sprites.Tile;
@@ -86,21 +87,16 @@ namespace ISO.Core.Tiled
 
                             columns[c] = newasprite;
 
-                            if (c == layer.width - 1) // last item
-                            {
-                                rows[r] = columns;
-                            }
+
                         }
                     }
+
+                    rows[r] = columns; // we must assing column to its array position everytime at the end 
                 }
 
                 AtlasSprites.Add(rows);
 
             }
-
-
-
-
         }
 
         // Increases top to bottom down the screen.
@@ -146,10 +142,14 @@ namespace ISO.Core.Tiled
                 for (int column = firstColumn + shift; column <= lastColumn; column += 2)
                 {
                     var point = TileSiteAt(row, column);
-                    var tile = GetTileOnPosition(point.X, point.Y);
-                    if (tile != null)
+
+                    for (int layer = 0; layer < AtlasSprites.Count; layer++) // for each layer :)
                     {
-                        tile.Draw(gameTime, batch);
+                        var tile = GetTileOnPosition(point.X, point.Y, layer);
+                        if (tile != null)
+                        {
+                            tile.Draw(gameTime, batch);
+                        }
                     }
 
                 }
@@ -185,36 +185,16 @@ namespace ISO.Core.Tiled
 
         public void Draw(GameTime time, SpriteBatch batch)
         {
-            //stopWatch.Start();
 
-            //var layer = AtlasSprites[0];
-            //for (int row = 0; row < layer.Length; row++)
-            //{
-            //    for (int column = 0; column < layer[row].Length; column++)
-            //    {
-            //        layer[row][column].Draw(time, batch);
-            //    }
-            //}
-
-            var cameraPosOnWorldTopLeft = Camera.ScreenToWorldSpace(new Vector2(-128,-64));
+            var cameraPosOnWorldTopLeft = Camera.ScreenToWorldSpace(new Vector2(-128, -64));
             var tileOnTopLeft = GetTileOnWorld((int)cameraPosOnWorldTopLeft.X, (int)cameraPosOnWorldTopLeft.Y);
 
             var cameraPosOnWorldBottomRight = Camera.ScreenToWorldSpace(new Vector2(Camera.viewport.Width + 128, Camera.viewport.Height + 64));
             var tileOnPosBottomRight = GetTileOnWorld((int)cameraPosOnWorldBottomRight.X, (int)cameraPosOnWorldBottomRight.Y);
 
-
             //Log.Write(tileOnTopLeft.ToString() + " " + cameraPosOnWorldTopLeft.ToString());
 
             DrawTiles(tileOnTopLeft, tileOnPosBottomRight, time, batch);
-
-
-
-            //Task.Run(() =>
-            //{
-            //    Log.Write(stopWatch.ElapsedMilliseconds.ToString());
-            //    stopWatch.Reset();
-            //});
-
 
         }
 
@@ -256,7 +236,6 @@ namespace ISO.Core.Tiled
                     tilespriteToReturn = tiles[row][column];
                 }
             }
-
 
             return tilespriteToReturn;
         }
