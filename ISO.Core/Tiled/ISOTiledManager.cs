@@ -80,10 +80,10 @@ namespace ISO.Core.Tiled
                         {
                             var asprite = ImageAtlas.AtlasSprites[id - 1];
 
-                            var newasprite = new TileSprite(asprite.Texture, asprite.PositionX, asprite.PositionY, ImageAtlas.Width, ImageAtlas.Height, r, c);
-                            var x = ((c * 64) / 2) - ((r * 64) / 2);
-                            var y = ((r * 32) / 2) + ((c * 32) / 2);
-                            newasprite.destinationRectangle = new Rectangle(x, y, 64, 32);
+                            var newasprite = new TileSprite(asprite.Texture, asprite.PositionX, asprite.PositionY, ImageAtlas.TileWidth, ImageAtlas.TileHeight, r, c);
+                            var x = ((c * ImageAtlas.TileWidth) / 2) - ((r * ImageAtlas.TileWidth) / 2);
+                            var y = ((r * ImageAtlas.TileHeight) / 2) + ((c * ImageAtlas.TileHeight) / 2);
+                            newasprite.destinationRectangle = new Rectangle(x, y, ImageAtlas.TileWidth, ImageAtlas.TileHeight);
 
                             columns[c] = newasprite;
 
@@ -156,33 +156,6 @@ namespace ISO.Core.Tiled
             }
         }
 
-
-        public void GetRectangle(Point topLeft, int rows, int columns)
-        {
-            var selectedRow = GetTileOnPosition(topLeft.X, topLeft.Y);
-            var selected = GetTileOnPosition(topLeft.X, topLeft.Y);
-            //selected.Color = Color.Red;
-
-
-            for (int r = 0; r < rows; r++)
-            {
-                selectedRow = GetTileOnPosition(selectedRow.Row + 1, selectedRow.Column + 1); // rows
-                selected = selectedRow;
-
-                for (int c = 0; c < columns; c++) // zig zag
-                {
-
-                    selected = GetTileOnPosition(selected.Row, selected.Column - 1);
-                    selected.Color = Color.Red;
-
-                    selected = GetTileOnPosition(selected.Row + 1, selected.Column);
-                    selected.Color = Color.Red;
-
-                }
-            }
-
-        }
-
         public void Draw(GameTime time, SpriteBatch batch)
         {
 
@@ -253,8 +226,8 @@ namespace ISO.Core.Tiled
         public Point GetTileOnWorld(int x, int y)
         {
 
-            var column = (int)Math.Floor((y / 32f) + (x / 64f));
-            var row = (int)Math.Floor((-x / 64f) + (y / 32f));
+            var column = (int)Math.Floor((y / (float)ImageAtlas.TileHeight) + (x / (float)ImageAtlas.TileHeight));
+            var row = (int)Math.Floor((-x / (float)ImageAtlas.TileWidth) + (y / (float)ImageAtlas.TileHeight));
 
             return new Point(row, column);
 

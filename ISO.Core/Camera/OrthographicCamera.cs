@@ -14,7 +14,7 @@ namespace ISO.Core.Camera
         public Viewport viewport;
         private Vector2 center;
 
-
+        public bool UseVirtualResolution { get; set; }
         public bool updateMetrix { get; set; } = true;
 
 
@@ -77,13 +77,17 @@ namespace ISO.Core.Camera
             }
         }
 
+        public Vector2 VirtualResolution { get; set; } = new Vector2(1920, 1080);
+
+
         /// <summary>
         /// Constructor
         /// </summary>
         /// <param name="view">viewport of camera</param>
-        public OrthographicCamera(Viewport view)
+        public OrthographicCamera(Viewport view, bool useVirtualResolution = false)
         {
             viewport = view;
+            UseVirtualResolution = useVirtualResolution;
         }
 
         /// <summary>
@@ -92,7 +96,7 @@ namespace ISO.Core.Camera
         /// <param name="view"></param>
         public void OnResolutionChange(Viewport view)
         {
-            viewport = view;
+            viewport = view;            
             updateMetrix = true;
         }
 
@@ -104,11 +108,23 @@ namespace ISO.Core.Camera
         {
             if (updateMetrix == true)
             {
+
+                float widthRatio = 1;
+                float heighRatio = 1;
+
+                if (UseVirtualResolution == true)
+                {
+                    widthRatio = viewport.Width / VirtualResolution.X;
+                    heighRatio = viewport.Height / VirtualResolution.Y;
+                }
+
+
                 center = new Vector2(Position.X, Position.Y);
 
                 Projection =
                     Matrix.CreateTranslation(new Vector3(-center.X, -center.Y, 0)) *
                     Matrix.CreateRotationZ(Rotation) *
+                    Matrix.CreateScale(widthRatio, heighRatio, 1) *
                     Matrix.CreateScale(new Vector3(Zooom, Zooom, 1)) *
                 //Matrix.CreateTranslation(new Vector3(viewport.Width / 2, viewport.Height / 2, 0));
                 Matrix.CreateTranslation(new Vector3(0, 0, 0));

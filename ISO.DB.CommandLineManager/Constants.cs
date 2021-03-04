@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Text;
 
 namespace ISO.DB.CLM
@@ -17,7 +18,7 @@ namespace ISO.DB.CLM
         {
             if (withDbName == true)
             {
-                return AppDomain.CurrentDomain.BaseDirectory + "\\" + dbName;
+                return Path.Combine(AppDomain.CurrentDomain.BaseDirectory, dbName);
             }
             else
             {

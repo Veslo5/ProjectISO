@@ -12,10 +12,8 @@ namespace ISO.Core.Sprites.Atlas
         private int Rows { get; set; }
         private int Columns { get; set; }
 
-        public int Width { get; set; }
-        public int Height { get; set; }
-
-        private int CurrentRow { get; set; }
+        public int TileWidth { get; set; }
+        public int TileHeight { get; set; }
 
         public List<AtlasSprite> AtlasSprites { get; set; } = new List<AtlasSprite>();
 
@@ -24,14 +22,20 @@ namespace ISO.Core.Sprites.Atlas
             Columns = columns;
             Rows = rows;
 
-            Width = texture.Width / Columns;
-            Height = texture.Height / Rows;
+            cutTiles(texture, columns, rows);
+        }
 
-            for (int y = 0; y < rows; y++)
+        private void cutTiles(Texture2D texture, int columns, int rows)
+        {
+            // Set tile informations
+            TileWidth = texture.Width / Columns;
+            TileHeight = texture.Height / Rows;
+
+            for (int y = 0; y < rows; y++) // cuts all sprites in atlas
             {
                 for (int x = 0; x < columns; x++)
                 {
-                    AtlasSprites.Add(new AtlasSprite(texture, x, y, Width, Height));
+                    AtlasSprites.Add(new AtlasSprite(texture, x, y, TileWidth, TileHeight));
                 }
             }
         }

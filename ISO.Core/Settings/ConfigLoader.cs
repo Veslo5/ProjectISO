@@ -15,13 +15,13 @@ namespace ISO.Core.Settings
         /// <returns></returns>
         public static Config LoadConfig()
         {
-            var path = AppDomain.CurrentDomain.BaseDirectory + "\\config.json";
+            var path = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "config.json");
 
             Log.Info("Loading config from path " + path);
 
             var file = File.ReadAllText(path);
             var config = JsonConvert.DeserializeObject<Config>(file);
-            config.DataPath = AppDomain.CurrentDomain.BaseDirectory + "Data\\galaxy_data.DAT";
+            config.DataPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Data", "galaxy_data.DAT");
 
             return config;
         }

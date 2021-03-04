@@ -110,7 +110,7 @@ namespace ISO.Core.StateManager
             LuaProvider.InvokeFunctionFromScript(Name, INIT_NAME);
         }
 
-        
+
 
         public virtual void LoadContent()
         {
@@ -141,6 +141,7 @@ namespace ISO.Core.StateManager
 
         public virtual void Draw(GameTime gameTime)
         {
+
             SpriteBatch.Begin(sortMode: SpriteSortMode.Deferred, blendState: BlendState.AlphaBlend, samplerState: SamplerState.PointClamp, transformMatrix: Camera.Projection);
             Map.Draw(gameTime, SpriteBatch);
             SpriteBatch.End();
