@@ -5,11 +5,13 @@ namespace ISO.Core.Scenes
     public interface IScene
     {
         public string Name { get; }
+        public int ID { get; }
         void Initialize();
         void Update(GameTime gameTime);
         void Draw(GameTime gameTime);
         void UnloadContent();
         void LoadContent();
+        void AfterLoadContent();
         void GraphicsDevice_DeviceReset();
         void Window_ClientSizeChanged();
     }
