@@ -39,7 +39,7 @@ namespace ISO.Core.StateManager
         {
             Config = config;
             SceneManager = new SceneManager(this);
-            Graphics = new ISOGraphicsManager(this, config.Width, config.Height, config.Vsync);
+            Graphics = new ISOGraphicsManager(this, config.Width, config.Height, config.Vsync);            
 
             Content = new ISOContentManager(base.Content.ServiceProvider);
             Content.RootDirectory = "Content";
@@ -54,8 +54,32 @@ namespace ISO.Core.StateManager
         {
             Graphics.ChangeResolution(Graphics.CurrentWidth, Graphics.CurrentHeight, false);
 
+            this.GraphicsDevice.DeviceReset += GraphicsDevice_DeviceReset;
+            this.Window.ClientSizeChanged += Window_ClientSizeChanged;
+
+
             SceneManager.CurrentScene.Initialize();
             base.Initialize();
+        }
+
+        /// <summary>
+        /// Resize of window
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void Window_ClientSizeChanged(object sender, EventArgs e)
+        {
+            SceneManager.CurrentScene.Window_ClientSizeChanged();
+        }
+
+        /// <summary>
+        /// Resolution change event
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void GraphicsDevice_DeviceReset(object sender, EventArgs e)
+        {
+            SceneManager.CurrentScene.GraphicsDevice_DeviceReset();
         }
 
         /// <summary>
@@ -82,7 +106,7 @@ namespace ISO.Core.StateManager
         /// </summary>
         protected override void UnloadContent()
         {
-            SceneManager.CurrentScene.LoadContent();
+            SceneManager.CurrentScene.UnloadContent();
         }
 
         /// <summary>

@@ -63,6 +63,9 @@ namespace ISO.Core.UI
             }
         }
 
-
+        internal void AfterLoad()
+        {
+            //throw new NotImplementedException();
+        }
     }
 }

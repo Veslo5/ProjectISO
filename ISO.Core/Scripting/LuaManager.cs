@@ -10,8 +10,29 @@ using System.Text;
 
 namespace ISO.Core.Scripting
 {
-    public class LuaProvider
+    public class LuaManager
     {
+        /// <summary>
+        /// Init constant for script function
+        /// </summary>
+        private const string INIT_NAME = "Initialize";
+
+        /// <summary>
+        /// LoadContent constant for script function
+        /// </summary>
+        private const string LOADCONTENT_NAME = "LoadContent";
+
+        /// <summary>
+        /// Update constant for script function
+        /// </summary>
+        private const string UPDATE_NAME = "Update";
+
+        /// <summary>
+        /// Draw constant for script function
+        /// </summary>
+        private const string DRAW_NAME = "Draw";
+
+
         /// <summary>
         /// ScriptHolder
         /// </summary>
@@ -22,7 +43,7 @@ namespace ISO.Core.Scripting
         private string Path { get; }
         private int Id { get; }
 
-        public LuaProvider(string path, int id, bool enabled = false)
+        public LuaManager(string path, int id, bool enabled = false)
         {
             ScriptHolder = new List<IsoScript>();
             IsEnabled = enabled;
@@ -88,13 +109,18 @@ namespace ISO.Core.Scripting
         }
 
 
+        public void InvokeUpdate(string name) => InvokeFunctionFromScript(name, UPDATE_NAME);
+        public void InvokeInit(string name) => InvokeFunctionFromScript(name, INIT_NAME);
+        public void InvokeDraw(string name) => InvokeFunctionFromScript(name, DRAW_NAME);
+        public void InvokeLoad(string name) => InvokeFunctionFromScript(name, LOADCONTENT_NAME);
+
         /// <summary>
         /// 
         /// </summary>
         /// <param name="scriptName"></param>
         /// <param name="functionName"></param>
         /// <param name="functionArgs"></param>
-        public void InvokeFunctionFromScript(string scriptName, string functionName, params object[] functionArgs)
+        private void InvokeFunctionFromScript(string scriptName, string functionName, params object[] functionArgs)
         {
             if (IsEnabled == false)
                 return;

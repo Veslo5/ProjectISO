@@ -2,6 +2,8 @@
 using ISO.Core.DataLoader;
 using ISO.Core.DataLoader.SqliteClient;
 using ISO.Core.DataLoader.SqliteClient.Contracts;
+using ISO.Core.Loading;
+using ISO.Core.Loading.Assets;
 using ISO.Core.Logging;
 using ISO.Core.Sprites.Atlas;
 using ISO.Core.Sprites.Tile;
@@ -23,7 +25,7 @@ namespace ISO.Core.Tiled
 {
     public class ISOTiledManager
     {
-
+        private LoadingManager content { get; }
         private ISOTiledMap MapMetadata { get; set; }
         private ISOTiledPicture MapImage { get; set; }
 
@@ -35,34 +37,43 @@ namespace ISO.Core.Tiled
         private int ID { get; }
         private string Path { get; }
 
-        Stopwatch stopWatch = new Stopwatch();
 
-        public ISOTiledManager(int ID, string path)
+        public ISOTiledManager(int ID, string path, OrthographicCamera camera, LoadingManager content)
         {
             this.ID = ID;
             Path = path;
+            Camera = camera;
+            this.content = content;
+
         }
 
-        public void LoadContent(GraphicsDevice device, OrthographicCamera camera, ISOContentManager content)
+        public void LoadContent()
         {
-            Camera = camera;
+            content.LoadCallback("MAP_DATA", LoadMapData);
+            content.Load<TextureAsset>("MAP", "MAP" + "/GROUND/" + "sd1");
+        }
 
-            string filemapJson = null;
-            string filepicJson = null;
-
+        public void LoadMapData()
+        {
             using (var context = new ISODbContext(Path))
             {
-                filemapJson = context.LoadMapDataByType(ID, MapDataTypes.MAP).DATA;
+                var filemapJson = context.LoadMapDataByType(ID, MapDataTypes.MAP).DATA;
                 MapMetadata = JsonConvert.DeserializeObject<ISOTiledMap>(filemapJson);
 
-                filepicJson = context.LoadMapDataByType(ID, MapDataTypes.PICTURE).DATA;
+                var filepicJson = context.LoadMapDataByType(ID, MapDataTypes.PICTURE).DATA;
                 MapImage = JsonConvert.DeserializeObject<ISOTiledPicture>(filepicJson);
             }
+        }
 
-            var image = content.Load<Texture2D>("MAP" + "/GROUND/" + System.IO.Path.GetFileNameWithoutExtension(MapImage.image));
+        public void AfterLoad()
+        {
+            CreateMap(content.GetTexture("MAP").Texture);
+        }
 
+
+        private void CreateMap(Texture2D image)
+        {
             ImageAtlas = new Atlas(image, MapImage.columns, MapImage.imageheight / MapImage.tileheight);
-
 
             foreach (var layer in MapMetadata.layers)
             {
@@ -195,7 +206,6 @@ namespace ISO.Core.Tiled
 
 
         }
-
 
         public TileSprite GetTileOnPosition(int row, int column, int layer = 0)
         {

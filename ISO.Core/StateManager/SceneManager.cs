@@ -13,12 +13,12 @@ namespace ISO.Core.StateManager
         /// <summary>
         /// Current scene
         /// </summary>
-        public Scene CurrentScene {get; set; }
+        public IScene CurrentScene {get; set; }
 
         /// <summary>
         /// Scenes holder
         /// </summary>
-        private List<Scene> Scenes = new List<Scene>();
+        private List<IScene> Scenes = new List<IScene>();
 
         /// <summary>
         /// Game reference
@@ -35,7 +35,7 @@ namespace ISO.Core.StateManager
         /// Add new scene into list
         /// </summary>
         /// <param name="scene"></param>
-        public void AddNew(Scene scene)
+        public void AddNew(IScene scene)
         {
             Scenes.Add(scene);
             if (CurrentScene == null)
@@ -51,7 +51,10 @@ namespace ISO.Core.StateManager
         public void NextScene(string name)
         {
             var upperName = name.ToUpper();
+
+            CurrentScene.UnloadContent();
             CurrentScene = Scenes.FirstOrDefault(x => x.Name == upperName);
+            CurrentScene.LoadContent();
         }
 
     }

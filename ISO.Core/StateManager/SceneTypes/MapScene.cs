@@ -1,5 +1,6 @@
 ﻿using ISO.Core.Camera;
 using ISO.Core.Corountines;
+using ISO.Core.Loading;
 using ISO.Core.Logging;
 using ISO.Core.Scripting;
 using ISO.Core.Tiled;
@@ -9,37 +10,20 @@ using Microsoft.Xna.Framework.Graphics;
 using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Threading.Tasks;
 
-namespace ISO.Core.StateManager
+namespace ISO.Core.StateManager.Scene
 {
 
     /// <summary>
     /// Scene
     /// </summary>
-    public class Scene
+    public class MapScene : IScene
     {
-        /// <summary>
-        /// Init constant for script function
-        /// </summary>
-        private const string INIT_NAME = "Initialize";
+        #region SceneInfo
 
         /// <summary>
-        /// LoadContent constant for script function
-        /// </summary>
-        private const string LOADCONTENT_NAME = "LoadContent";
-
-        /// <summary>
-        /// Update constant for script function
-        /// </summary>
-        private const string UPDATE_NAME = "Update";
-
-        /// <summary>
-        /// Draw constant for script function
-        /// </summary>
-        private const string DRAW_NAME = "Draw";
-
-        /// <summary>
-        /// Scene & Script Name
+        /// Scene & Script Name,
         /// </summary>
         public string Name { get; }
 
@@ -47,6 +31,8 @@ namespace ISO.Core.StateManager
         /// Scene ID from db
         /// </summary>
         public int ID { get; }
+
+        #endregion
 
         /// <summary>
         /// Spritebatch for rendering
@@ -58,10 +44,12 @@ namespace ISO.Core.StateManager
         /// </summary>
         public ISOGame Game { get; }
 
+        #region Managers
+
         /// <summary>
         /// Lua Scripting provider
         /// </summary>
-        public LuaProvider LuaProvider { get; set; }
+        public LuaManager LuaProvider { get; set; }
 
         /// <summary>
         /// Camera
@@ -88,41 +76,59 @@ namespace ISO.Core.StateManager
         /// </summary>
         public ISOTiledManager Map { get; set; }
 
-        public Scene(string name, int id, ISOGame game, bool enableLuaScripting)
+        /// <summary>
+        /// Loading manager
+        /// </summary>
+        public LoadingManager LoadingManager { get; set; }
+
+        #endregion
+
+        #region Constructor
+        public MapScene(string name, int id, ISOGame game, bool enableLuaScripting)
         {
             Name = name;
             ID = id;
             Game = game;
 
-            LuaProvider = new LuaProvider(game.Config.DataPath, id, enableLuaScripting);
-            LuaProvider.AddScript(Name);
 
-            Map = new ISOTiledManager(id, game.Config.DataPath);
-            UI = new UIManager(ID, Game.Config.DataPath);
-            Corountines = new CorountineManager();
         }
+        #endregion
 
+        #region LoopEvents
         public virtual void Initialize()
         {
+            SpriteBatch = new SpriteBatch(Game.GraphicsDevice);
+
+            Camera = new OrthographicCamera(Game.GraphicsDevice.Viewport);
+            UICamera = new OrthographicCamera(Game.GraphicsDevice.Viewport);
+
+            LuaProvider = new LuaManager(Game.Config.DataPath, ID, false);
+            LuaProvider.AddScript(Name);
+
+            LoadingManager = new LoadingManager(Game.Content);
+            Map = new ISOTiledManager(ID, Game.Config.DataPath, Camera, LoadingManager);
+            UI = new UIManager(ID, Game.Config.DataPath);
+            Corountines = new CorountineManager();
+
             Log.Info("Initializing scene " + Name);
-            this.Game.GraphicsDevice.DeviceReset += GraphicsDevice_DeviceReset;
-            this.Game.Window.ClientSizeChanged += Window_ClientSizeChanged;
-            LuaProvider.InvokeFunctionFromScript(Name, INIT_NAME);
+            LuaProvider.InvokeInit(Name);
+
         }
-
-
 
         public virtual void LoadContent()
         {
             Log.Info("Loading content from scene " + Name);
 
-            SpriteBatch = new SpriteBatch(Game.GraphicsDevice);
-            Camera = new OrthographicCamera(Game.GraphicsDevice.Viewport);
-            UICamera = new OrthographicCamera(Game.GraphicsDevice.Viewport);
-            Map.LoadContent(Game.GraphicsDevice, Camera, Game.Content);
+            Map.LoadContent();
             UI.LoadContent(Game);
-            LuaProvider.InvokeFunctionFromScript(Name, LOADCONTENT_NAME);
+            LuaProvider.InvokeLoad(Name);
 
+        }
+
+        public virtual void AfterLoadContent()
+        {
+            Map.AfterLoad();
+            UI.AfterLoad();
         }
 
         public virtual void Update(GameTime gameTime)
@@ -136,12 +142,11 @@ namespace ISO.Core.StateManager
             Corountines.Update(gameTime);
             UI.Update(gameTime);
 
-            LuaProvider.InvokeFunctionFromScript(Name, UPDATE_NAME);
+            LuaProvider.InvokeUpdate(Name);
         }
 
         public virtual void Draw(GameTime gameTime)
         {
-
             SpriteBatch.Begin(sortMode: SpriteSortMode.Deferred, blendState: BlendState.AlphaBlend, samplerState: SamplerState.PointClamp, transformMatrix: Camera.Projection);
             Map.Draw(gameTime, SpriteBatch);
             SpriteBatch.End();
@@ -150,17 +155,19 @@ namespace ISO.Core.StateManager
             UI.Draw(gameTime, SpriteBatch);
             SpriteBatch.End();
 
-            LuaProvider.InvokeFunctionFromScript(Name, DRAW_NAME);
+            LuaProvider.InvokeDraw(Name);
 
             Game.Window.Title = "FPS " + (1 / gameTime.ElapsedGameTime.TotalSeconds);
-
         }
 
         public virtual void UnloadContent()
         {
             Log.Info("Unloading content from scene " + Name);
 
+
         }
+
+        #endregion
 
         #region Events
 
@@ -169,7 +176,7 @@ namespace ISO.Core.StateManager
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void GraphicsDevice_DeviceReset(object sender, EventArgs e)
+        public void GraphicsDevice_DeviceReset()
         {
             Log.Info("Resolution changed on scene " + Name);
             Camera.OnResolutionChange(Game.GraphicsDevice.Viewport);
@@ -177,8 +184,12 @@ namespace ISO.Core.StateManager
 
         }
 
-
-        private void Window_ClientSizeChanged(object sender, EventArgs e)
+        /// <summary>
+        /// Window size changed
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        public void Window_ClientSizeChanged()
         {
             Camera.OnResolutionChange(Game.GraphicsDevice.Viewport);
             UICamera.OnResolutionChange(Game.GraphicsDevice.Viewport);

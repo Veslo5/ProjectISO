@@ -2,6 +2,7 @@
 using ISO.Core.Sprites;
 using ISO.Core.Sprites.Primitives;
 using ISO.Core.StateManager;
+using ISO.Core.StateManager.Scene;
 using ISO.Core.UI.Elements;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -12,7 +13,7 @@ using System.Text;
 
 namespace ProjectISO.Levels
 {
-    public class ISO_Loader01 : Scene
+    public class ISO_Loader01 : MapScene
     {
         public ISO_Loader01(string name, int id, ISOGame game, bool enableLuaScripting) : base(name, id, game, enableLuaScripting)
         {
@@ -26,31 +27,36 @@ namespace ProjectISO.Levels
             base.Initialize();
             Game.Window.AllowUserResizing = true;
             UI.UILoader.LoadJson(ID);
+            LoadingManager.AfterLoadCallback = AfterLoadContent;
         }
 
         public override void LoadContent()
         {
             base.LoadContent();
             
-
+            LoadingManager.StartLoadingAsync();
             testRectangle = new ISORectagle(Color.Red, Game.GraphicsDevice, new Rectangle(0, 0, 100, 100));
 
+        }
+
+        public override void AfterLoadContent()
+        {
+            base.AfterLoadContent();
         }
 
         public override void Draw(GameTime gameTime)
         {
             Game.GraphicsDevice.Clear(Color.Black);
 
-            //SpriteBatch.Begin(transformMatrix: Camera.Projection);
-            //testSprite.Draw(gameTime, SpriteBatch);
-            //testRectangle.Draw(gameTime, SpriteBatch);
-            //SpriteBatch.End();
-
+            if(!LoadingManager.IsLoading)
             base.Draw(gameTime);
         }
 
         public override void Update(GameTime gameTime)
         {
+            if(LoadingManager.IsLoading)
+                return;
+
             var state = Keyboard.GetState();
             var mouse = Mouse.GetState();
 
