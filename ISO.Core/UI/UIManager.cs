@@ -1,13 +1,9 @@
-﻿using ISO.Core.StateManager;
-using ISO.Core.UI.Elements;
+﻿using ISO.Core.Engine.Logging;
+using ISO.Core.Scenes;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using System;
 using System.Collections.Generic;
-using System.Text;
 using System.Linq;
-using ISO.Core.Logging;
-using ISO.Core.Settings;
 
 namespace ISO.Core.UI
 {
@@ -16,8 +12,8 @@ namespace ISO.Core.UI
         private List<IUI> UIHolder { get; set; }
 
         public UILoader UILoader { get; set; }
-        
-        public int MapID { get;}
+
+        public int MapID { get; }
 
         public UIManager(int ID, string dbPath)
         {

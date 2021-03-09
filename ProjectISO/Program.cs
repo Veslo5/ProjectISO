@@ -1,7 +1,7 @@
-﻿using ISO.Core.DataLoader.SqliteClient;
-using ISO.Core.Logging;
+﻿using ISO.Core.Data.DataLoader.SqliteClient;
+using ISO.Core.Engine.Logging;
+using ISO.Core.Scenes;
 using ISO.Core.Settings;
-using ISO.Core.StateManager;
 using ProjectISO.Levels;
 using System;
 
@@ -16,7 +16,7 @@ namespace ProjectISO
             var config = ConfigLoader.LoadConfig();
 
             initData(config.DataInit, config.DataPath);
-          
+
 
             using (var game = new ISOGame(config))
             {

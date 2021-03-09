@@ -1,9 +1,7 @@
-﻿using ISO.Core.Logging;
-using ISO.Core.StateManager;
+﻿using ISO.Core.Engine.Logging;
+using ISO.Core.Scenes;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using System;
-using System.Collections.Generic;
 using System.Text;
 
 namespace ISO.Core.UI.Elements
@@ -49,7 +47,7 @@ namespace ISO.Core.UI.Elements
         /// Loaded font 
         /// </summary>
         private SpriteFont font { get; set; }
-        
+
 
         public ISOText(string name, string text = "", string fontName = "Default", int maxLineWidth = 1000)
         {
@@ -73,7 +71,7 @@ namespace ISO.Core.UI.Elements
 
         public void Draw(GameTime gameTime, SpriteBatch spriteBatch)
         {
-            spriteBatch.DrawString(font, Text, Position, Color);            
+            spriteBatch.DrawString(font, Text, Position, Color);
         }
 
         public void Update(GameTime gameTime)

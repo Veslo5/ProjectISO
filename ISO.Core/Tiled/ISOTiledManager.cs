@@ -1,12 +1,11 @@
-﻿using ISO.Core.Camera;
-using ISO.Core.DataLoader;
-using ISO.Core.DataLoader.SqliteClient;
-using ISO.Core.DataLoader.SqliteClient.Contracts;
+﻿using ISO.Core.Data.DataLoader.SqliteClient;
+using ISO.Core.Data.DataLoader.SqliteClient.Contracts;
+using ISO.Core.Engine.Camera;
+using ISO.Core.Engine.Logging;
+using ISO.Core.Graphics.Sprites.Atlas;
+using ISO.Core.Graphics.Sprites.Tile;
 using ISO.Core.Loading;
 using ISO.Core.Loading.Assets;
-using ISO.Core.Logging;
-using ISO.Core.Sprites.Atlas;
-using ISO.Core.Sprites.Tile;
 using ISO.Core.Tiled.Models;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -14,12 +13,6 @@ using Microsoft.Xna.Framework.Input;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
-using System.IO;
-using System.Linq;
-using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace ISO.Core.Tiled
 {

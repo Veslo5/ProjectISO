@@ -1,8 +1,5 @@
 ﻿using Microsoft.Xna.Framework;
-using System;
 using System.Collections;
-using System.Collections.Generic;
-using System.Text;
 
 namespace ISO.Core.Corountines
 {
@@ -24,7 +21,7 @@ namespace ISO.Core.Corountines
 
             if (wait.HasValue)
             {
-                var timeRemaining = wait.Value - gameTime.ElapsedGameTime.TotalMilliseconds;                
+                var timeRemaining = wait.Value - gameTime.ElapsedGameTime.TotalMilliseconds;
 
                 if (timeRemaining < 0)
                 {

@@ -1,7 +1,4 @@
 ﻿using CommandLine;
-using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace ISO.DB.CLM.Commands.Map
 {
@@ -9,7 +6,7 @@ namespace ISO.DB.CLM.Commands.Map
     [Verb("map", HelpText = "Adds new map into database")]
     public class MapOptions
     {
-        [Value(0, Required = true,  HelpText = "Location ID")]
+        [Value(0, Required = true, HelpText = "Location ID")]
         public int LocationID { get; set; }
 
         [Value(1, Required = true, HelpText = "Map name")]

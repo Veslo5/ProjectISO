@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using System.Collections.Generic;
 
 namespace ISO.Core.UI.JSONModels
 {
@@ -15,12 +13,12 @@ namespace ISO.Core.UI.JSONModels
         public int X { get; set; }
         public int Y { get; set; }
         public bool IsVisible { get; set; }
-        public bool IsEnabled { get; set; }        
+        public bool IsEnabled { get; set; }
     }
 
     public class ISOUIText
     {
-        public string Name { get; set; }        
+        public string Name { get; set; }
         public int Rotation { get; set; }
         public int X { get; set; }
         public int Y { get; set; }

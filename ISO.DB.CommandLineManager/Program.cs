@@ -1,5 +1,4 @@
 ﻿using CommandLine;
-using ISO.Core.DataLoader.SqliteClient;
 using ISO.DB.CLM.Commands.Clear;
 using ISO.DB.CLM.Commands.Init;
 using ISO.DB.CLM.Commands.IsoUI;
@@ -7,10 +6,6 @@ using ISO.DB.CLM.Commands.Locations;
 using ISO.DB.CLM.Commands.Map;
 using ISO.DB.CLM.Commands.MapData;
 using ISO.DB.CLM.Commands.Script;
-using SQLite;
-using System;
-using System.Collections.Generic;
-using System.IO;
 
 namespace ISO.DB.CLM
 {

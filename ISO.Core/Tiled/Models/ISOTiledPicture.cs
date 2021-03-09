@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace ISO.Core.Tiled.Models
+﻿namespace ISO.Core.Tiled.Models
 {
     public class ISOTiledPicture
     {

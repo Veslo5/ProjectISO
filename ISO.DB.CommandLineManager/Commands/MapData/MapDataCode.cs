@@ -1,10 +1,9 @@
-﻿using ISO.Core.DataLoader.SqliteClient;
-using ISO.Core.DataLoader.SqliteClient.Contracts;
+﻿using ISO.Core.Data.DataLoader.SqliteClient;
+using ISO.Core.Data.DataLoader.SqliteClient.Contracts;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Text;
 
 namespace ISO.DB.CLM.Commands.MapData
 {
@@ -64,7 +63,7 @@ namespace ISO.DB.CLM.Commands.MapData
 
 
             Console.WriteLine("Inserted " + mapData.Count() + " data rows");
-            
+
         }
     }
 }

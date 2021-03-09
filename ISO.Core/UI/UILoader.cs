@@ -1,14 +1,10 @@
-﻿using ISO.Core.DataLoader.SqliteClient;
-using ISO.Core.DataLoader.SqliteClient.Contracts;
-using ISO.Core.Logging;
+﻿using ISO.Core.Data.DataLoader.SqliteClient;
+using ISO.Core.Data.DataLoader.SqliteClient.Contracts;
+using ISO.Core.Engine.Logging;
 using ISO.Core.UI.Elements;
 using ISO.Core.UI.JSONModels;
 using Microsoft.Xna.Framework;
 using Newtonsoft.Json;
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Text;
 
 namespace ISO.Core.UI
 {

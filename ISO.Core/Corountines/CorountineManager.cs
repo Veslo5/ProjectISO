@@ -1,9 +1,7 @@
-﻿using ISO.Core.Logging;
+﻿using ISO.Core.Engine.Logging;
 using Microsoft.Xna.Framework;
-using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Text;
 
 namespace ISO.Core.Corountines
 {
@@ -19,9 +17,9 @@ namespace ISO.Core.Corountines
         {
             Log.Info("Creating corountine manager");
         }
-        
+
         public Coroutine StartCoroutine(IEnumerator routine)
-        {            
+        {
             var cr = new Coroutine(routine);
             coroutines.Add(cr);
             return cr;

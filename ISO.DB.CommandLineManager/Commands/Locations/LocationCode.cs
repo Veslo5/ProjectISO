@@ -1,8 +1,6 @@
-﻿using ISO.Core.DataLoader.SqliteClient;
-using ISO.Core.DataLoader.SqliteClient.Contracts;
+﻿using ISO.Core.Data.DataLoader.SqliteClient;
+using ISO.Core.Data.DataLoader.SqliteClient.Contracts;
 using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace ISO.DB.CLM.Commands.Locations
 {

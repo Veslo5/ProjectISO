@@ -1,10 +1,7 @@
 ﻿using ISO.Core.Corountines;
-using ISO.Core.Logging;
+using ISO.Core.Engine.Logging;
 using Microsoft.Xna.Framework.Graphics;
-using System;
 using System.Collections;
-using System.Collections.Generic;
-using System.Text;
 
 namespace ISO.Core.Debugging
 {

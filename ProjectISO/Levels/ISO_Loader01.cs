@@ -1,15 +1,8 @@
-﻿using ISO.Core.DataLoader;
-using ISO.Core.Sprites;
-using ISO.Core.Sprites.Primitives;
-using ISO.Core.StateManager;
-using ISO.Core.StateManager.Scene;
-using ISO.Core.UI.Elements;
+﻿using ISO.Core.Graphics.Sprites.Primitives;
+using ISO.Core.Scenes;
+using ISO.Core.Scenes.SceneTypes;
 using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
-using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace ProjectISO.Levels
 {
@@ -18,7 +11,7 @@ namespace ProjectISO.Levels
         public ISO_Loader01(string name, int id, ISOGame game, bool enableLuaScripting) : base(name, id, game, enableLuaScripting)
         {
         }
-        
+
         ISORectagle testRectangle;
 
 
@@ -33,7 +26,7 @@ namespace ProjectISO.Levels
         public override void LoadContent()
         {
             base.LoadContent();
-            
+
             LoadingManager.StartLoadingAsync();
             testRectangle = new ISORectagle(Color.Red, Game.GraphicsDevice, new Rectangle(0, 0, 100, 100));
 
@@ -48,13 +41,13 @@ namespace ProjectISO.Levels
         {
             Game.GraphicsDevice.Clear(Color.Black);
 
-            if(!LoadingManager.IsLoading)
-            base.Draw(gameTime);
+            if (!LoadingManager.IsLoading)
+                base.Draw(gameTime);
         }
 
         public override void Update(GameTime gameTime)
         {
-            if(LoadingManager.IsLoading)
+            if (LoadingManager.IsLoading)
                 return;
 
             var state = Keyboard.GetState();

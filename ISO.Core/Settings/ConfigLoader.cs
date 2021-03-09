@@ -1,9 +1,7 @@
-﻿using ISO.Core.Logging;
+﻿using ISO.Core.Engine.Logging;
 using Newtonsoft.Json;
 using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Text;
 
 namespace ISO.Core.Settings
 {

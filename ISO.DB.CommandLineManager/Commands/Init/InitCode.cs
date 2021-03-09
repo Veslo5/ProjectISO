@@ -1,9 +1,7 @@
-﻿using ISO.Core.DataLoader.SqliteClient;
+﻿using ISO.Core.Data.DataLoader.SqliteClient;
 using SQLite;
 using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Text;
 
 namespace ISO.DB.CLM.Commands.Init
 {

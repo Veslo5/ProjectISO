@@ -1,8 +1,5 @@
-﻿using ISO.Core.Logging;
+﻿using ISO.Core.Engine.Logging;
 using Microsoft.Xna.Framework;
-using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace ISO.Core.Graphics
 {
@@ -15,14 +12,14 @@ namespace ISO.Core.Graphics
         /// <summary>
         /// Current window Width
         /// </summary>
-        public int CurrentWidth { get;set;}
+        public int CurrentWidth { get; set; }
 
         /// <summary>
         /// Current window height
         /// </summary>
-        public int CurrentHeight { get;set;}
+        public int CurrentHeight { get; set; }
 
-        public bool Vsync { get;set;}
+        public bool Vsync { get; set; }
 
         public ISOGraphicsManager(Game game, int width, int height, bool vsync) : base(game)
         {
@@ -46,14 +43,14 @@ namespace ISO.Core.Graphics
 
             this.PreferredBackBufferWidth = width;
             this.PreferredBackBufferHeight = height;
-            this.SynchronizeWithVerticalRetrace = Vsync;            
+            this.SynchronizeWithVerticalRetrace = Vsync;
 
             CurrentWidth = width;
             CurrentHeight = height;
 
             float scaleX = this.PreferredBackBufferWidth / width;
             float scaleY = this.PreferredBackBufferHeight / height;
-           
+
             this.IsFullScreen = fullscreen;
 
             this.ApplyChanges();
