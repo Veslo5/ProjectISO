@@ -1,4 +1,6 @@
 ﻿using ISO.Core.Engine.Logging;
+using ISO.Core.Loading;
+using ISO.Core.Loading.Assets;
 using ISO.Core.Scenes;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -78,9 +80,14 @@ namespace ISO.Core.UI.Elements
         {
         }
 
-        public void LoadContent(ISOGame game)
+        public void LoadContent(LoadingManager manager)
+        {           
+            manager.Load<FontAsset>(fontName, fontName);
+        }
+
+        public void AfterLoad(LoadingManager manager)
         {
-            font = game.Content.Load<SpriteFont>(fontName);
+            this.font = manager.GetFont(this.fontName).Font;
             this.SetText(Text);
         }
 

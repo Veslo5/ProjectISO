@@ -13,6 +13,8 @@ namespace ISO.Core.UI
         private UIManager Manager { get; }
         private string Dbpath { get; }
 
+        private ISOUI uiData { get; set; }
+
         public UILoader(UIManager manager, string dbpath)
         {
             Log.Info("UILoader loaded.");
@@ -21,19 +23,26 @@ namespace ISO.Core.UI
             Dbpath = dbpath;
         }
 
+        public void LoadUIContent()
+        {
+            Manager.Loader.LoadCallback("UI", LoadJson);
+        }
+
+        public void AfterLoad()
+        {
+        }
+
 
         /// <summary>
         /// Loads UI json and create UI elements from it
         /// </summary>
         /// <param name="name"></param>
-        public void LoadJson(int mapID)
+        public void LoadJson()
         {
-            ISOUI uiData = null;
-
-            Log.Info("Loading UI file " + mapID);
+            Log.Info("Loading UI file " + Manager.MapID);
             using (var context = new ISODbContext(Dbpath))
             {
-                uiData = context.LoadTForMap<ISOUI>(mapID);
+                uiData = context.LoadTForMap<ISOUI>(Manager.MapID);
             }
 
             if (uiData == null)
@@ -42,6 +51,17 @@ namespace ISO.Core.UI
                 return;
             }
 
+            BuildUI();
+
+            Manager.LoadContentForUIS();
+
+            //TODO: clean uiData to null            
+        }
+
+
+
+        public void BuildUI()
+        {
             var jsonString = uiData.DATA;
 
             var deserializedJSON = JsonConvert.DeserializeObject<UIRoot>(jsonString);
@@ -50,8 +70,6 @@ namespace ISO.Core.UI
             {
                 CreateText(item);
             }
-
-            //TODO: clean uiData to null            
         }
 
         /// <summary>

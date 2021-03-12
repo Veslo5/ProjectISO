@@ -1,6 +1,7 @@
 ﻿using ISO.Core.Corountines;
 using ISO.Core.Engine.Camera;
 using ISO.Core.Engine.Logging;
+using ISO.Core.Loading;
 using ISO.Core.Scripting;
 using ISO.Core.UI;
 using Microsoft.Xna.Framework;
@@ -32,7 +33,7 @@ namespace ISO.Core.Scenes.SceneTypes
             LuaProvider = new LuaManager(Game.Config.DataPath, ID, false);
             LuaProvider.AddScript(Name);
 
-            UI = new UIManager(ID, Game.Config.DataPath);
+            UI = new UIManager(ID, Game.Config.DataPath, LoadingManager);
             Corountines = new CorountineManager();
 
         }
@@ -44,9 +45,9 @@ namespace ISO.Core.Scenes.SceneTypes
             UI.LoadContent(Game);
             LuaProvider.InvokeLoad(Name);
         }
-        public virtual void AfterLoadContent()
+        public virtual void AfterLoadContent(LoadingManager manager)
         {
-            UI.AfterLoad();
+            UI.AfterLoad(manager);
         }
 
         public virtual void Update(GameTime gameTime)

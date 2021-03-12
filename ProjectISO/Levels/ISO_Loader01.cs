@@ -1,4 +1,5 @@
 ﻿using ISO.Core.Graphics.Sprites.Primitives;
+using ISO.Core.Loading;
 using ISO.Core.Scenes;
 using ISO.Core.Scenes.SceneTypes;
 using Microsoft.Xna.Framework;
@@ -18,8 +19,7 @@ namespace ProjectISO.Levels
         public override void Initialize()
         {
             base.Initialize();
-            Game.Window.AllowUserResizing = true;
-            UI.UILoader.LoadJson(ID);
+            Game.Window.AllowUserResizing = true;            
             LoadingManager.AfterLoadCallback = AfterLoadContent;
         }
 
@@ -32,9 +32,9 @@ namespace ProjectISO.Levels
 
         }
 
-        public override void AfterLoadContent()
+        public override void AfterLoadContent(LoadingManager manager)
         {
-            base.AfterLoadContent();
+            base.AfterLoadContent(manager);
         }
 
         public override void Draw(GameTime gameTime)

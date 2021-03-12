@@ -1,4 +1,5 @@
-﻿using ISO.Core.Scenes;
+﻿using ISO.Core.Loading;
+using ISO.Core.Scenes;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 
@@ -10,6 +11,7 @@ namespace ISO.Core.UI
 
         void Draw(GameTime gameTime, SpriteBatch spriteBatch);
         void Update(GameTime gameTime);
-        void LoadContent(ISOGame game);
+        void LoadContent(LoadingManager manager);
+        void AfterLoad(LoadingManager manager);
     }
 }

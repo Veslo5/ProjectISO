@@ -1,4 +1,5 @@
-﻿using Microsoft.Xna.Framework;
+﻿using ISO.Core.Loading;
+using Microsoft.Xna.Framework;
 
 namespace ISO.Core.Scenes
 {
@@ -11,7 +12,7 @@ namespace ISO.Core.Scenes
         void Draw(GameTime gameTime);
         void UnloadContent();
         void LoadContent();
-        void AfterLoadContent();
+        void AfterLoadContent(LoadingManager manager);
         void GraphicsDevice_DeviceReset();
         void Window_ClientSizeChanged();
     }

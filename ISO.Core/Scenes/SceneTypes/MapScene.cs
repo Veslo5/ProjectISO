@@ -45,7 +45,7 @@ namespace ISO.Core.Scenes.SceneTypes
 
             LoadingManager = new LoadingManager(Game.Content);
             Map = new ISOTiledManager(ID, Game.Config.DataPath, Camera, LoadingManager);
-            UI = new UIManager(ID, Game.Config.DataPath);
+            UI = new UIManager(ID, Game.Config.DataPath, LoadingManager);
             Corountines = new CorountineManager();
 
             Log.Info("Initializing scene " + Name);
@@ -63,10 +63,10 @@ namespace ISO.Core.Scenes.SceneTypes
 
         }
 
-        public virtual void AfterLoadContent()
+        public virtual void AfterLoadContent(LoadingManager manager)
         {
-            Map.AfterLoad();
-            UI.AfterLoad();
+            Map.AfterLoad(manager);
+            UI.AfterLoad(manager);
         }
 
         public virtual void Update(GameTime gameTime)

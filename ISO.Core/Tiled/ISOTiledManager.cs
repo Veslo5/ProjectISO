@@ -58,7 +58,7 @@ namespace ISO.Core.Tiled
             }
         }
 
-        public void AfterLoad()
+        public void AfterLoad(LoadingManager manager)
         {
             CreateMap(content.GetTexture("MAP").Texture);
         }

@@ -51,12 +51,17 @@ namespace ISO.Core.Loading
         /// <summary>
         /// Callback when data is loaded
         /// </summary>
-        public Action AfterLoadCallback { get; set; }
+        public Action<LoadingManager> AfterLoadCallback { get; set; }
 
         /// <summary>
         /// Flag when game is asynchronously loading data
         /// </summary>
         public bool IsLoading { get; set; }
+
+        /// <summary>
+        /// When loading data is in progress cannot add more
+        /// </summary>
+        public bool LoadingCallBackInvoked { get; set; } = false;
 
         /// <summary>
         /// Assets count to be loaded
@@ -97,7 +102,12 @@ namespace ISO.Core.Loading
         /// <param name="callback"></param>
         public void LoadCallback(string name, Action callback)
         {
-            DataCallback.Add(name, callback);
+            if (LoadingCallBackInvoked == true)
+            {
+                throw new Exception("Cannot add more data into loading queue when loading is in progress.");
+            }
+
+            DataCallback.TryAdd(name, callback);
             AssetsCount++;
         }
 
@@ -109,20 +119,25 @@ namespace ISO.Core.Loading
         /// <param name="path"></param>
         public void Load<T>(string name, string path) where T : AssetBase
         {
+            if (LoadingCallBackInvoked == true)
+            {
+                throw new Exception("Cannot add more data into loading queue when loading is in progress.");
+            }
+
             var tType = typeof(T);
             if (tType.Equals(typeof(TextureAsset)))
             {
-                Textures.Add(name, new TextureAsset(path));
+                Textures.TryAdd(name, new TextureAsset(path));
                 AssetsCount++;
             }
             else if (tType.Equals(typeof(SoundAsset)))
             {
-                Sounds.Add(name, new SoundAsset(path));
+                Sounds.TryAdd(name, new SoundAsset(path));
                 AssetsCount++;
             }
             else if (tType.Equals(typeof(FontAsset)))
             {
-                Fonts.Add(name, new FontAsset(path));
+                Fonts.TryAdd(name, new FontAsset(path));
                 AssetsCount++;
             }
             else if (tType.Equals(typeof(DataAsset)))
@@ -275,6 +290,12 @@ namespace ISO.Core.Loading
         {
             IsLoading = true;
 
+            foreach (var callback in DataCallback)
+            {
+                callback.Value.Invoke();
+            }
+            LoadingCallBackInvoked = true;
+
             foreach (var texture in Textures)
             {
                 texture.Value.Texture = manager.Load<Texture2D>(texture.Value.Path);
@@ -293,16 +314,13 @@ namespace ISO.Core.Loading
                 AssetsLoaded++;
             }
 
-            foreach (var callback in DataCallback)
-            {
-                callback.Value.Invoke();
-            }
 
             //Log.Warning("Sleeping for 5000ms");
             //Thread.Sleep(5000);
 
-            AfterLoadCallback.Invoke();
+            AfterLoadCallback.Invoke(this);
             IsLoading = false;
+            LoadingCallBackInvoked = false;
         }
     }
 }

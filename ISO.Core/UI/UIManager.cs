@@ -1,4 +1,5 @@
 ﻿using ISO.Core.Engine.Logging;
+using ISO.Core.Loading;
 using ISO.Core.Scenes;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -13,15 +14,26 @@ namespace ISO.Core.UI
 
         public UILoader UILoader { get; set; }
 
+        public LoadingManager Loader { get; set; }
+
         public int MapID { get; }
 
-        public UIManager(int ID, string dbPath)
+        public UIManager(int ID, string dbPath, LoadingManager loader)
         {
             Log.Info("Creating UI manager");
             MapID = ID;
+            Loader = loader;
 
             UIHolder = new List<IUI>();
             UILoader = new UILoader(this, dbPath);
+        }
+
+        internal void LoadContentForUIS()
+        {
+            foreach (var element in UIHolder)
+            {
+                element.LoadContent(Loader);
+            }
         }
 
         public void AddUI(IUI uiElement)
@@ -53,15 +65,17 @@ namespace ISO.Core.UI
 
         internal void LoadContent(ISOGame game)
         {
-            foreach (var element in UIHolder)
-            {
-                element.LoadContent(game);
-            }
+            UILoader.LoadUIContent();          
         }
 
-        internal void AfterLoad()
+        internal void AfterLoad(LoadingManager manager)
         {
-            //throw new NotImplementedException();
+            UILoader.AfterLoad();
+
+            foreach (var element in UIHolder)
+            {
+                element.AfterLoad(Loader);
+            }
         }
     }
 }
