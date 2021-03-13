@@ -2,29 +2,15 @@
 using ISO.Core.Loading;
 using ISO.Core.Loading.Assets;
 using ISO.Core.Scenes;
+using ISO.Core.UI.Elements.Base;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using System.Text;
 
 namespace ISO.Core.UI.Elements
 {
-    public class ISOText : IUI
+    public class ISOText : UIControl, IUI
     {
-        /// <summary>
-        /// Name of UI element
-        /// </summary>
-        public string Name { get; set; }
-
-        /// <summary>
-        /// Text color
-        /// </summary>
-        public Color Color { get; set; } = Color.White;
-
-        /// <summary>
-        /// Text position
-        /// </summary>
-        public Vector2 Position { get; set; } = new Vector2(0, 0);
-
         /// <summary>
         /// maxline width
         /// </summary>
@@ -73,7 +59,7 @@ namespace ISO.Core.UI.Elements
 
         public void Draw(GameTime gameTime, SpriteBatch spriteBatch)
         {
-            spriteBatch.DrawString(font, Text, Position, Color);
+            spriteBatch.DrawString(font, Text, Position.ToVector2(), Color);
         }
 
         public void Update(GameTime gameTime)

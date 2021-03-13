@@ -33,7 +33,7 @@ namespace ISO.Core.Scenes.SceneTypes
             LuaProvider = new LuaManager(Game.Config.DataPath, ID, false);
             LuaProvider.AddScript(Name);
 
-            UI = new UIManager(ID, Game.Config.DataPath, LoadingManager);
+            UI = new UIManager(ID, Game.Config.DataPath, LoadingManager, Game.GraphicsDevice);
             Corountines = new CorountineManager();
 
         }

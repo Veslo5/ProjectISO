@@ -2,9 +2,13 @@
 using ISO.Core.Data.DataLoader.SqliteClient.Contracts;
 using ISO.Core.Engine.Logging;
 using ISO.Core.UI.Elements;
+using ISO.Core.UI.Elements.Base;
 using ISO.Core.UI.JSONModels;
+using ISO.Core.UI.JSONModels.Base;
 using Microsoft.Xna.Framework;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
+using System;
 
 namespace ISO.Core.UI
 {
@@ -66,9 +70,28 @@ namespace ISO.Core.UI
 
             var deserializedJSON = JsonConvert.DeserializeObject<UIRoot>(jsonString);
 
-            foreach (var item in deserializedJSON.Texts)
+            foreach (var control in deserializedJSON.Controls)
             {
-                CreateText(item);
+                AddControl(control as JObject, null); // Root does not have parents
+            }
+
+
+        }
+
+
+        private void AddControl(JObject control, UIControl parent)
+        {
+            var typeInt = control.GetValue("Type").Value<int>();
+            var type = (JType)typeInt;
+
+            switch (type)
+            {
+                case JType.TEXT:
+                    CreateText(control.ToObject<JText>(), parent);
+                    break;
+                case JType.PANEL:
+                    CreatePanel(control.ToObject<JPanel>(), parent);
+                    break;
             }
         }
 
@@ -76,16 +99,43 @@ namespace ISO.Core.UI
         /// Creates text elements
         /// </summary>
         /// <param name="text"></param>
-        private void CreateText(ISOUIText text)
+        private void CreateText(JText text, UIControl parent)
         {
             var ISOTextitem = new ISOText(text.Name, text.Text);
-            ISOTextitem.Position = new Vector2(text.X, text.Y);
+
+            if (parent != null)
+                ISOTextitem.Parent = parent;
+
+            ISOTextitem.Position = new Point(text.X, text.Y);
             ISOTextitem.Color = new Color(text.R, text.G, text.B);
+
 
             Manager.AddUI(ISOTextitem);
 
         }
 
+        private void CreatePanel(JPanel panel, UIControl parent)
+        {
+            var isoPanel = new ISOPanel(panel.Name, Manager.Device);
+            
+            if (parent != null)
+                isoPanel.Parent = parent;
+
+            isoPanel.Position = new Point(panel.X, panel.Y);
+            isoPanel.Size = new Point(panel.Width, panel.Height);
+            isoPanel.Color = new Color(panel.R, panel.G, panel.B);
+
+
+            if (panel.Controls != null)
+            {
+                foreach (var control in panel.Controls) // Recursive add every UI in panel 
+                {
+                    AddControl(control as JObject, isoPanel);
+                }
+            }
+
+            Manager.AddUI(isoPanel);
+        }
 
     }
 

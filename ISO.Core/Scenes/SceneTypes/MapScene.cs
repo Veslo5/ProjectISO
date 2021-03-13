@@ -45,7 +45,7 @@ namespace ISO.Core.Scenes.SceneTypes
 
             LoadingManager = new LoadingManager(Game.Content);
             Map = new ISOTiledManager(ID, Game.Config.DataPath, Camera, LoadingManager);
-            UI = new UIManager(ID, Game.Config.DataPath, LoadingManager);
+            UI = new UIManager(ID, Game.Config.DataPath, LoadingManager, Game.GraphicsDevice);
             Corountines = new CorountineManager();
 
             Log.Info("Initializing scene " + Name);

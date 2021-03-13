@@ -13,17 +13,17 @@ namespace ISO.Core.UI
         private List<IUI> UIHolder { get; set; }
 
         public UILoader UILoader { get; set; }
-
         public LoadingManager Loader { get; set; }
+        public GraphicsDevice Device { get; }
 
         public int MapID { get; }
 
-        public UIManager(int ID, string dbPath, LoadingManager loader)
+        public UIManager(int ID, string dbPath, LoadingManager loader, GraphicsDevice device)
         {
             Log.Info("Creating UI manager");
             MapID = ID;
             Loader = loader;
-
+            Device = device;
             UIHolder = new List<IUI>();
             UILoader = new UILoader(this, dbPath);
         }
@@ -65,7 +65,7 @@ namespace ISO.Core.UI
 
         internal void LoadContent(ISOGame game)
         {
-            UILoader.LoadUIContent();          
+            UILoader.LoadUIContent();                      
         }
 
         internal void AfterLoad(LoadingManager manager)
@@ -76,6 +76,8 @@ namespace ISO.Core.UI
             {
                 element.AfterLoad(Loader);
             }
+
+            UIHolder.Reverse();
         }
     }
 }
