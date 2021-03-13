@@ -1,6 +1,7 @@
 ﻿using ISO.Core.Engine.Logging;
 using ISO.Core.Loading;
 using ISO.Core.Scenes;
+using ISO.Core.UI.Elements.Base;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using System.Collections.Generic;
@@ -15,7 +16,6 @@ namespace ISO.Core.UI
         public UILoader UILoader { get; set; }
         public LoadingManager Loader { get; set; }
         public GraphicsDevice Device { get; }
-
         public int MapID { get; }
 
         public UIManager(int ID, string dbPath, LoadingManager loader, GraphicsDevice device)
@@ -35,6 +35,12 @@ namespace ISO.Core.UI
                 element.LoadContent(Loader);
             }
         }
+
+
+        //public UIControl GetUIOnPosition(Point mousePosition)
+        //{
+        //    convertedItem.DimensionsRectangle.Contains(mousePosition);
+        //}
 
         public void AddUI(IUI uiElement)
         {
@@ -65,7 +71,7 @@ namespace ISO.Core.UI
 
         internal void LoadContent(ISOGame game)
         {
-            UILoader.LoadUIContent();                      
+            UILoader.LoadUIContent();
         }
 
         internal void AfterLoad(LoadingManager manager)

@@ -37,6 +37,9 @@ namespace ISO.Core.UI.JSONModels.Base
         [JsonProperty(Order = 10)]
         public int Height { get; set; }
 
+        [JsonProperty(Order = 11)]
+        public int ZIndex { get; set; }
+
         public bool IsVisible { get; set; }
 
         public int Rotation { get; set; }

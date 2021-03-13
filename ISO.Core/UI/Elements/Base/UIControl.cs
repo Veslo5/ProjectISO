@@ -15,6 +15,8 @@ namespace ISO.Core.UI.Elements.Base
         /// </summary>
         public Color Color { get; set; } = Color.White;
 
+        public int ZIndex { get; set; } = 0;
+
 
         private Point _position;
 
@@ -42,6 +44,9 @@ namespace ISO.Core.UI.Elements.Base
         /// Text position
         /// </summary>
         public Point Size { get; set; } = new Point(0, 0);
+
+
+      public Rectangle DimensionsRectangle { get;set;} = new Rectangle();
 
         /// <summary>
         /// Parent

@@ -13,7 +13,7 @@ namespace ProjectISO
     {
         [STAThread]
         static void Main()
-        {
+        {            
             Log.Write("Starting engine...");
             var config = ConfigLoader.LoadConfig();
 
@@ -60,7 +60,9 @@ namespace ProjectISO
                 Y = 100,
                 Width = 100,
                 Height = 100,
-                Controls = new System.Collections.Generic.List<object>()
+                Controls = new System.Collections.Generic.List<object>(),
+                ZIndex = 0
+
             };
 
             var panel2 = new JPanel()
@@ -70,13 +72,30 @@ namespace ProjectISO
                 G = 255,
                 B = 0,
                 Type = ISO.Core.UI.JSONModels.Base.JType.PANEL,
-                X = 100,
-                Y = 100,
-                Width = 100,
-                Height = 100
+                X = 10,
+                Y = 10,
+                Width = 80,
+                Height = 80,
+                ZIndex = 0
+            };
+
+            var panel3 = new JPanel()
+            {
+                Name = "Panel3",
+                R = 0,
+                G = 0,
+                B = 255,
+                Type = ISO.Core.UI.JSONModels.Base.JType.PANEL,
+                X = 10,
+                Y = 10,
+                Width = 60,
+                Height = 60,
+                ZIndex = 1
+
             };
 
             panel.Controls.Add(panel2);
+            panel.Controls.Add(panel3);
 
             json.Controls.Add(panel);
 

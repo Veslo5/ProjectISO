@@ -6,6 +6,7 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 
 namespace ISO.Core.UI.Elements
@@ -14,6 +15,8 @@ namespace ISO.Core.UI.Elements
     {
         private ISORectagle background { get; set; }
         private GraphicsDevice device { get; }
+
+        public List<UIControl> Childs { get; set; } = new List<UIControl>();
 
         public ISOPanel(string name, GraphicsDevice device)
         {
@@ -24,7 +27,16 @@ namespace ISO.Core.UI.Elements
 
         public void LoadContent(LoadingManager manager)
         {
-            background = new ISORectagle(Color, device, new Rectangle(Position.X, Position.Y, Size.X, Size.Y));
+            DimensionsRectangle = new Rectangle(Position.X, Position.Y, Size.X, Size.Y);
+            background = new ISORectagle(Color, device, DimensionsRectangle);
+
+            Childs = Childs.OrderBy(x => x.ZIndex).ToList();
+
+            foreach (var child in Childs)
+            {
+                var childUI = child as IUI;
+                childUI.LoadContent(manager);
+            }
         }
 
         public void AfterLoad(LoadingManager manager)
@@ -39,6 +51,13 @@ namespace ISO.Core.UI.Elements
         public void Draw(GameTime gameTime, SpriteBatch spriteBatch)
         {
             background.Draw(gameTime, spriteBatch);
+
+            foreach (var child in Childs)
+            {
+                var childUI = child as IUI;
+                childUI.Draw(gameTime, spriteBatch);
+            }
+
         }
 
 

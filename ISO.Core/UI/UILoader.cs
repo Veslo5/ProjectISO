@@ -75,7 +75,6 @@ namespace ISO.Core.UI
                 AddControl(control as JObject, null); // Root does not have parents
             }
 
-
         }
 
 
@@ -105,10 +104,12 @@ namespace ISO.Core.UI
 
             if (parent != null)
                 ISOTextitem.Parent = parent;
+            else
+                Manager.AddUI(ISOTextitem);
 
             ISOTextitem.Position = new Point(text.X, text.Y);
             ISOTextitem.Color = new Color(text.R, text.G, text.B);
-
+            ISOTextitem.ZIndex = text.ZIndex;
 
             Manager.AddUI(ISOTextitem);
 
@@ -116,15 +117,23 @@ namespace ISO.Core.UI
 
         private void CreatePanel(JPanel panel, UIControl parent)
         {
+
             var isoPanel = new ISOPanel(panel.Name, Manager.Device);
-            
+
             if (parent != null)
-                isoPanel.Parent = parent;
+            {
+                isoPanel.Parent = parent;               
+                (parent as ISOPanel).Childs.Add(isoPanel);
+            }
+            else
+            {
+                Manager.AddUI(isoPanel);
+            }
 
             isoPanel.Position = new Point(panel.X, panel.Y);
             isoPanel.Size = new Point(panel.Width, panel.Height);
             isoPanel.Color = new Color(panel.R, panel.G, panel.B);
-
+            isoPanel.ZIndex = panel.ZIndex;
 
             if (panel.Controls != null)
             {
@@ -134,7 +143,6 @@ namespace ISO.Core.UI
                 }
             }
 
-            Manager.AddUI(isoPanel);
         }
 
     }
