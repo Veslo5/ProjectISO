@@ -13,7 +13,7 @@ namespace ProjectISO.Levels
         {
         }
 
-        ISORectagle testRectangle;
+        RectagleSprite testRectangle;
 
 
         public override void Initialize()
@@ -28,7 +28,7 @@ namespace ProjectISO.Levels
             base.LoadContent();
 
             LoadingManager.StartLoadingAsync();
-            testRectangle = new ISORectagle(Color.Red, Game.GraphicsDevice, new Rectangle(0, 0, 100, 100));
+            testRectangle = new RectagleSprite(Color.Red, Game.GraphicsDevice, new Rectangle(0, 0, 100, 100));
 
         }
 

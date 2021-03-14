@@ -100,7 +100,7 @@ namespace ISO.Core.UI
         /// <param name="text"></param>
         private void CreateText(JText text, UIControl parent)
         {
-            var ISOTextitem = new ISOText(text.Name, text.Text);
+            var ISOTextitem = new UIText(text.Name, text.Text);
 
             if (parent != null)
                 ISOTextitem.Parent = parent;
@@ -118,12 +118,12 @@ namespace ISO.Core.UI
         private void CreatePanel(JPanel panel, UIControl parent)
         {
 
-            var isoPanel = new ISOPanel(panel.Name, Manager.Device);
+            var isoPanel = new UIPanel(panel.Name, Manager.Device);
 
             if (parent != null)
             {
                 isoPanel.Parent = parent;               
-                (parent as ISOPanel).Childs.Add(isoPanel);
+                (parent as UIPanel).Childs.Add(isoPanel);
             }
             else
             {
@@ -134,6 +134,7 @@ namespace ISO.Core.UI
             isoPanel.Size = new Point(panel.Width, panel.Height);
             isoPanel.Color = new Color(panel.R, panel.G, panel.B);
             isoPanel.ZIndex = panel.ZIndex;
+            isoPanel.Path = panel.Path;
 
             if (panel.Controls != null)
             {
