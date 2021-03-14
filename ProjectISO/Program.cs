@@ -13,7 +13,9 @@ namespace ProjectISO
     {
         [STAThread]
         static void Main()
-        {            
+        {
+            //GenerateTestJSON();
+
             Log.Write("Starting engine...");
             var config = ConfigLoader.LoadConfig();
 
@@ -61,7 +63,7 @@ namespace ProjectISO
                 Width = 100,
                 Height = 100,
                 Controls = new System.Collections.Generic.List<object>(),
-                ZIndex = 0
+                ZIndex = 1
 
             };
 
@@ -94,10 +96,44 @@ namespace ProjectISO
 
             };
 
+
+
+            var panel4 = new JPanel()
+            {
+                Name = "panel4",
+                R = 0,
+                G = 100,
+                B = 0,
+                Type = ISO.Core.UI.JSONModels.Base.JType.PANEL,
+                X = 150,
+                Y = 150,
+                Width = 100,
+                Height = 100,
+                ZIndex = 0,
+                Controls = new System.Collections.Generic.List<object>(),
+            };
+
+            var panel5 = new JPanel()
+            {
+                Name = "panel5",
+                R = 0,
+                G = 0,
+                B = 100,
+                Type = ISO.Core.UI.JSONModels.Base.JType.PANEL,
+                X = 10,
+                Y = 10,
+                Width = 80,
+                Height = 80,
+                ZIndex = 1,
+                Controls = new System.Collections.Generic.List<object>(),
+            };
+
             panel.Controls.Add(panel2);
             panel.Controls.Add(panel3);
+            panel4.Controls.Add(panel5);
 
             json.Controls.Add(panel);
+            json.Controls.Add(panel4);
 
             var y = JsonConvert.SerializeObject(json);
         }

@@ -1,7 +1,9 @@
 ﻿using ISO.Core.Engine.Logging;
 using ISO.Core.Loading;
 using ISO.Core.Scenes;
+using ISO.Core.UI.Elements;
 using ISO.Core.UI.Elements.Base;
+using ISO.Core.UI.Helpers;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using System.Collections.Generic;
@@ -17,6 +19,7 @@ namespace ISO.Core.UI
         public LoadingManager Loader { get; set; }
         public GraphicsDevice Device { get; }
         public int MapID { get; }
+        private UIHelper uIHelper { get; set; }
 
         public UIManager(int ID, string dbPath, LoadingManager loader, GraphicsDevice device)
         {
@@ -37,10 +40,14 @@ namespace ISO.Core.UI
         }
 
 
-        //public UIControl GetUIOnPosition(Point mousePosition)
-        //{
-        //    convertedItem.DimensionsRectangle.Contains(mousePosition);
-        //}
+        /// <summary>
+        /// Returns 
+        /// </summary>
+        public UIControl GetUIOnPosition(Point position)
+        {
+            return uIHelper.GetUIOnPosition(position);
+        }
+
 
         public void AddUI(IUI uiElement)
         {
@@ -77,13 +84,14 @@ namespace ISO.Core.UI
         internal void AfterLoad(LoadingManager manager)
         {
             UILoader.AfterLoad();
-
             foreach (var element in UIHolder)
             {
                 element.AfterLoad(Loader);
             }
-
             UIHolder.Reverse();
+
+
+            uIHelper = new UIHelper(UIHolder);
         }
     }
 }
