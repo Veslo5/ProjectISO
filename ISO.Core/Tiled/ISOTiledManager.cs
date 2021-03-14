@@ -229,7 +229,7 @@ namespace ISO.Core.Tiled
         public Point GetTileOnWorld(int x, int y)
         {
 
-            var column = (int)Math.Floor((y / (float)ImageAtlas.TileHeight) + (x / (float)ImageAtlas.TileHeight));
+            var column = (int)Math.Floor((y / (float)ImageAtlas.TileHeight) + (x / (float)ImageAtlas.TileWidth));
             var row = (int)Math.Floor((-x / (float)ImageAtlas.TileWidth) + (y / (float)ImageAtlas.TileHeight));
 
             return new Point(row, column);
