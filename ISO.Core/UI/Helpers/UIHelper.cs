@@ -19,7 +19,7 @@ namespace ISO.Core.UI.Helpers
         private List<UIControl> controlsOnPositon = new List<UIControl>();
         private List<UIControl> uiControlHolder { get; set; }
         private UIControl uiUnderPosition { get; set; }
-        private ISOPanel panelUnderPosition { get; set; }
+        private UIPanel panelUnderPosition { get; set; }
 
 
         /// <summary>
@@ -51,9 +51,9 @@ namespace ISO.Core.UI.Helpers
                 //Select UIControl with highest Z index
                 uiUnderPosition = controlsOnPositon.OrderByDescending(x => x.ZIndex).FirstOrDefault();
 
-                if (uiUnderPosition is ISOPanel)
+                if (uiUnderPosition is UIPanel)
                 {
-                    panelUnderPosition = uiUnderPosition as ISOPanel;
+                    panelUnderPosition = uiUnderPosition as UIPanel;
                     //Are there any childs?
                     if (panelUnderPosition.Childs.Count > 0)//If so, call itself recursively
                         return getUIOnPositionRecursive(position, panelUnderPosition.Childs);
