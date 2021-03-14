@@ -1,7 +1,9 @@
-﻿using ISO.Core.Graphics.Sprites.Primitives;
+﻿using ISO.Core.Engine.Logging;
+using ISO.Core.Graphics.Sprites.Primitives;
 using ISO.Core.Loading;
 using ISO.Core.Scenes;
 using ISO.Core.Scenes.SceneTypes;
+using ISO.Core.UI.Elements.Base;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Input;
 
@@ -56,6 +58,19 @@ namespace ProjectISO.Levels
             var world = Camera.ScreenToWorldSpace(mouse.Position.ToVector2());
 
             //Game.Window.Title = "Screen " + mouse.X + "x" + mouse.Y + "World " + world.X + "x" + world.Y ;
+
+
+            if (mouse.LeftButton == ButtonState.Pressed)
+            {
+                var controls = UI.GetUIOnPosition(mouse.Position);
+
+                if (controls == null)
+                    Log.Write("none");
+                else
+                    Log.Write(controls.Name);
+
+            }
+
 
 
 
