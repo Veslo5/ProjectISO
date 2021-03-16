@@ -160,19 +160,29 @@ namespace ISO.Core.Tiled
             }
         }
 
-        public void Draw(GameTime time, SpriteBatch batch)
+        double elapsed;
+
+        public void Draw(GameTime time, SpriteBatch batch, GraphicsDevice device)
         {
+            elapsed += time.ElapsedGameTime.TotalSeconds;
+            if (elapsed > 1d / 60)
+            {
+                //Log.Write(DateTime.Now.ToString());
+                elapsed = 0;
 
-            var cameraPosOnWorldTopLeft = Camera.ScreenToWorldSpace(new Vector2(-128, -64));
-            var tileOnTopLeft = GetTileOnWorld((int)cameraPosOnWorldTopLeft.X, (int)cameraPosOnWorldTopLeft.Y);
 
-            var cameraPosOnWorldBottomRight = Camera.ScreenToWorldSpace(new Vector2(Camera.viewport.Width + 128, Camera.viewport.Height + 64));
-            var tileOnPosBottomRight = GetTileOnWorld((int)cameraPosOnWorldBottomRight.X, (int)cameraPosOnWorldBottomRight.Y);
+                var cameraPosOnWorldTopLeft = Camera.ScreenToWorldSpace(new Vector2(-128, -64));
+                var tileOnTopLeft = GetTileOnWorld((int)cameraPosOnWorldTopLeft.X, (int)cameraPosOnWorldTopLeft.Y);
 
-            //Log.Write(tileOnTopLeft.ToString() + " " + cameraPosOnWorldTopLeft.ToString());
+                var cameraPosOnWorldBottomRight = Camera.ScreenToWorldSpace(new Vector2(Camera.viewport.Width + 128, Camera.viewport.Height + 64));
+                var tileOnPosBottomRight = GetTileOnWorld((int)cameraPosOnWorldBottomRight.X, (int)cameraPosOnWorldBottomRight.Y);
 
-            DrawTiles(tileOnTopLeft, tileOnPosBottomRight, time, batch);
+                //Log.Write(tileOnTopLeft.ToString() + " " + cameraPosOnWorldTopLeft.ToString());
 
+                DrawTiles(tileOnTopLeft, tileOnPosBottomRight, time, batch);
+
+                device.Clear(Color.Black);
+            }
         }
 
 

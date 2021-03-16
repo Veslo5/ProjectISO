@@ -14,7 +14,7 @@ namespace ISO.Core.Scenes.SceneTypes
     /// <summary>
     /// Scene
     /// </summary>
-    public class MapScene : Scene,  IScene
+    public class MapScene : Scene, IScene
     {
         #region Managers
 
@@ -26,15 +26,26 @@ namespace ISO.Core.Scenes.SceneTypes
         #endregion
 
         #region Constructor
-        public MapScene(string name, int id, ISOGame game, bool enableLuaScripting) : base(game ,name, id)
-        {                    
+        public MapScene(string name, int id, ISOGame game, bool enableLuaScripting) : base(game, name, id)
+        {
 
         }
         #endregion
+        RenderTarget2D target2D;
 
         #region LoopEvents
         public virtual void Initialize()
         {
+             target2D = new RenderTarget2D(Game.GraphicsDevice,
+                 800,
+                 600,
+                 false,
+                 Game.GraphicsDevice.PresentationParameters.BackBufferFormat,
+                 DepthFormat.Depth24,
+                 0,
+                 RenderTargetUsage.PreserveContents);
+            
+
             SpriteBatch = new SpriteBatch(Game.GraphicsDevice);
 
             Camera = new OrthographicCamera(Game.GraphicsDevice.Viewport);
@@ -84,9 +95,21 @@ namespace ISO.Core.Scenes.SceneTypes
 
         public virtual void Draw(GameTime gameTime)
         {
-            SpriteBatch.Begin(sortMode: SpriteSortMode.Deferred, blendState: BlendState.AlphaBlend, samplerState: SamplerState.PointClamp, transformMatrix: Camera.Projection);
-            Map.Draw(gameTime, SpriteBatch);
+            Game.GraphicsDevice.Clear(Color.Black);
+            Game.GraphicsDevice.SetRenderTarget(target2D);
+
+            SpriteBatch.Begin(sortMode: SpriteSortMode.Deferred, blendState: BlendState.AlphaBlend, samplerState: SamplerState.PointWrap, transformMatrix: Camera.Projection);
+            Map.Draw(gameTime, SpriteBatch, Game.GraphicsDevice);
             SpriteBatch.End();
+
+            Game.GraphicsDevice.SetRenderTarget(null);
+
+            SpriteBatch.Begin();
+
+            SpriteBatch.Draw(target2D, new Rectangle(0, 0, 800, 600), Color.White);
+
+            SpriteBatch.End();
+
 
             SpriteBatch.Begin(transformMatrix: UICamera.Projection);
             UI.Draw(gameTime, SpriteBatch);

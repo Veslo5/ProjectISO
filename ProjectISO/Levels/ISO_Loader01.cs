@@ -41,7 +41,7 @@ namespace ProjectISO.Levels
 
         public override void Draw(GameTime gameTime)
         {
-            Game.GraphicsDevice.Clear(Color.Black);
+            //Game.GraphicsDevice.Clear(Color.Black);
 
             if (!LoadingManager.IsLoading)
                 base.Draw(gameTime);
