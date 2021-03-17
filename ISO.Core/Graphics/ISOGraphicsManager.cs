@@ -1,5 +1,6 @@
 ﻿using ISO.Core.Engine.Logging;
 using Microsoft.Xna.Framework;
+using System;
 
 namespace ISO.Core.Graphics
 {
@@ -21,13 +22,38 @@ namespace ISO.Core.Graphics
 
         public bool Vsync { get; set; }
 
-        public ISOGraphicsManager(Game game, int width, int height, bool vsync) : base(game)
+        public int FrameCap { get; }
+
+        public ISOGraphicsManager(Game game, int width, int height, bool vsync, int frameCap) : base(game)
         {
             CurrentWidth = width;
             CurrentHeight = height;
             Vsync = vsync;
+            FrameCap = frameCap;
 
-            game.IsFixedTimeStep = false;
+            this.GraphicsProfile = Microsoft.Xna.Framework.Graphics.GraphicsProfile.Reach;
+            this.PreferMultiSampling = false;            
+
+            if (vsync == false)
+            {
+                this.SynchronizeWithVerticalRetrace = false;
+            }
+            else
+            {
+                this.SynchronizeWithVerticalRetrace = true;
+            }
+
+
+            if (frameCap > 0)
+            {
+                game.IsFixedTimeStep = true;
+                game.TargetElapsedTime = TimeSpan.FromSeconds(1d / FrameCap);
+
+            }
+            else
+            {
+                game.IsFixedTimeStep = false;
+            }
         }
 
 

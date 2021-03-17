@@ -3,6 +3,7 @@
   "Height": 600,
   "Fullscreen": false,
   "DataPath": ".",
+  "DataInit": false,
   "Vsync": false,
-  "DataInit": false
+  "FrameCap": -1
 }

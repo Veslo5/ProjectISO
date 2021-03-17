@@ -36,7 +36,7 @@ namespace ISO.Core.Scenes
         {
             Config = config;
             SceneManager = new SceneManager(this);
-            Graphics = new ISOGraphicsManager(this, config.Width, config.Height, config.Vsync);
+            Graphics = new ISOGraphicsManager(this, config.Width, config.Height, config.Vsync, config.FrameCap);
 
             Content = new ISOContentManager(base.Content.ServiceProvider);
             Content.RootDirectory = "Content";
