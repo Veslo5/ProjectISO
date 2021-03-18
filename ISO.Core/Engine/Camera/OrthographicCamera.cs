@@ -74,7 +74,7 @@ namespace ISO.Core.Engine.Camera
             }
         }
 
-        public Vector2 VirtualResolution { get; set; } = new Vector2(1920, 1080);
+        public Vector2 VirtualResolution { get; set; } = new Vector2(1366, 768);
 
 
         /// <summary>

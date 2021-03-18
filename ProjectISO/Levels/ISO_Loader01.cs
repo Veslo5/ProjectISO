@@ -21,7 +21,7 @@ namespace ProjectISO.Levels
         public override void Initialize()
         {
             base.Initialize();
-            Game.Window.AllowUserResizing = true;            
+            Game.Window.AllowUserResizing = true;
             LoadingManager.AfterLoadCallback = AfterLoadContent;
         }
 
@@ -114,6 +114,10 @@ namespace ProjectISO.Levels
             else if (state.IsKeyDown(Keys.Right))
             {
                 Camera.Position += Vector2.UnitX * ((float)gameTime.ElapsedGameTime.TotalSeconds * 1000);
+            }
+            else if (state.IsKeyDown(Keys.Escape))
+            {
+                this.Game.Exit();
             }
 
             base.Update(gameTime);

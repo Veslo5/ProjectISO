@@ -49,7 +49,7 @@ namespace ISO.Core.Scenes
         /// </summary>
         protected override void Initialize()
         {
-            Graphics.ChangeResolution(Graphics.CurrentWidth, Graphics.CurrentHeight, false);
+            Graphics.ChangeResolution(Graphics.CurrentWidth, Graphics.CurrentHeight, this.Config.Fullscreen);
 
             GraphicsDevice.DeviceReset += GraphicsDevice_DeviceReset;
             Window.ClientSizeChanged += Window_ClientSizeChanged;

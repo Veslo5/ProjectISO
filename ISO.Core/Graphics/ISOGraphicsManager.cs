@@ -32,8 +32,8 @@ namespace ISO.Core.Graphics
             FrameCap = frameCap;
 
             this.GraphicsProfile = Microsoft.Xna.Framework.Graphics.GraphicsProfile.Reach;
-            this.PreferMultiSampling = false;            
-
+            this.PreferMultiSampling = false;                        
+            
             if (vsync == false)
             {
                 this.SynchronizeWithVerticalRetrace = false;

@@ -29,6 +29,9 @@ namespace ProjectISO
 
                 game.Run();
             }
+
+           Environment.ExitCode = 0; // success for linux or mac - windows do not require it but support it
+
         }
 
         private static void initData(bool init, string path)

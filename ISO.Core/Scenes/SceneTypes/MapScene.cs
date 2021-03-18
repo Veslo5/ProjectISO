@@ -37,7 +37,7 @@ namespace ISO.Core.Scenes.SceneTypes
         {
             SpriteBatch = new SpriteBatch(Game.GraphicsDevice);
 
-            Camera = new OrthographicCamera(Game.GraphicsDevice.Viewport);
+            Camera = new OrthographicCamera(Game.GraphicsDevice.Viewport, Game.Config.VirtualResolution);
             UICamera = new OrthographicCamera(Game.GraphicsDevice.Viewport);
 
             LuaProvider = new LuaManager(Game.Config.DataPath, ID, false);
