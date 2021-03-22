@@ -1,5 +1,6 @@
 ﻿using ISO.Core.Data.DataLoader.SqliteClient;
 using ISO.Core.Engine.Logging;
+using ISO.Core.Engine.Logging.LogTypes;
 using ISO.Core.Scenes;
 using ISO.Core.Settings;
 using ISO.Core.UI.JSONModels;
@@ -16,7 +17,10 @@ namespace ProjectISO
         {
             //GenerateTestJSON();
 
+            Log.SetLogger(new ConsoleLogger());
+
             Log.Write("Starting engine...");
+
             var config = ConfigLoader.LoadConfig();
 
             initData(config.DataInit, config.DataPath);

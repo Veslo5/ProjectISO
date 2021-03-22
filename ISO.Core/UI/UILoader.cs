@@ -20,9 +20,7 @@ namespace ISO.Core.UI
         private ISOUI uiData { get; set; }
 
         public UILoader(UIManager manager, string dbpath)
-        {
-            Log.Info("UILoader loaded.");
-
+        {            
             Manager = manager;
             Dbpath = dbpath;
         }
@@ -43,7 +41,7 @@ namespace ISO.Core.UI
         /// <param name="name"></param>
         public void LoadJson()
         {
-            Log.Info("Loading UI file " + Manager.MapID);
+            Log.Info("Loading UI file " + Manager.MapID, LogModule.UI);
             using (var context = new ISODbContext(Dbpath))
             {
                 uiData = context.LoadTForMap<ISOUI>(Manager.MapID);

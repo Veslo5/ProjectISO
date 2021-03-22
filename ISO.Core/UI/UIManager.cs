@@ -23,7 +23,7 @@ namespace ISO.Core.UI
 
         public UIManager(int ID, string dbPath, LoadingManager loader, GraphicsDevice device)
         {
-            Log.Info("Creating UI manager");
+            Log.Info("Creating UI manager", LogModule.CR);
             MapID = ID;
             Loader = loader;
             Device = device;

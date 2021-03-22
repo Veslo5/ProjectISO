@@ -15,7 +15,7 @@ namespace ISO.Core.Corountines
 
         public CorountineManager()
         {
-            Log.Info("Creating corountine manager");
+            Log.Info("Creating corountine manager", LogModule.CR);
         }
 
         public Coroutine StartCoroutine(IEnumerator routine)

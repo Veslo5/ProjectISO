@@ -48,14 +48,14 @@ namespace ISO.Core.Scenes.SceneTypes
             UI = new UIManager(ID, Game.Config.DataPath, LoadingManager, Game.GraphicsDevice);
             Corountines = new CorountineManager();
 
-            Log.Info("Initializing scene " + Name);
+            Log.Info("Initializing scene " + Name, LogModule.CR);
             LuaProvider.InvokeInit(Name);
 
         }
 
         public virtual void LoadContent()
         {
-            Log.Info("Loading content from scene " + Name);
+            Log.Info("Loading content from scene " + Name, LogModule.CR);
 
             Map.LoadContent();
             UI.LoadContent(Game);
@@ -99,7 +99,7 @@ namespace ISO.Core.Scenes.SceneTypes
 
         public virtual void UnloadContent()
         {
-            Log.Info("Unloading content from scene " + Name);
+            Log.Info("Unloading content from scene " + Name, LogModule.CR);
 
 
         }
@@ -115,7 +115,7 @@ namespace ISO.Core.Scenes.SceneTypes
         /// <param name="e"></param>
         public void GraphicsDevice_DeviceReset()
         {
-            Log.Info("Resolution changed on scene " + Name);
+            Log.Info("Resolution changed on scene " + Name, LogModule.CR);
             Camera.OnResolutionChange(Game.GraphicsDevice.Viewport);
             UICamera.OnResolutionChange(Game.GraphicsDevice.Viewport);
 

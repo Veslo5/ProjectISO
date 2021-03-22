@@ -9,27 +9,27 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Text;
 
 namespace ISO.Core.UI.Elements
 {
-    public class UIPanel : UIControl, IUI
+    public class UIButton : UIControl, IUI
     {
-        public const string CONTENT_NAME = "UIPANEL";
+        public const string CONTENT_NAME = "UIBUTTON";        
 
-        private Sprite background { get; set; }
         private GraphicsDevice device { get; }
-
+        private UIText text { get; }
+        private Sprite background { get; set; }
+        private SpriteFont font { get; set; }
         public string Path { get; set; }
 
-        public List<UIControl> Childs { get; set; } = new List<UIControl>();
-
-        public UIPanel(string name, GraphicsDevice device)
+        public UIButton(string name, GraphicsDevice device)
         {
-            Log.Info("Creating UI Panel " + name, LogModule.UI);
-            Name = name;
+            Log.Info("Creating UI Button " + name, LogModule.UI);
             this.device = device;
+
+            this.text = new UIText(name + "_text");
+            this.text.Parent = this;
         }
 
         public void LoadContent(LoadingManager manager)
@@ -39,14 +39,10 @@ namespace ISO.Core.UI.Elements
             if (!string.IsNullOrEmpty(Path))
                 manager.Load<TextureAsset>(CONTENT_NAME, Path);
 
-            Childs = Childs.OrderBy(x => x.ZIndex).ToList(); // Make Sure that ZIndex is sorted by the right way
-            foreach (var child in Childs)
-            {
-                var childUI = child as IUI;
-                childUI.LoadContent(manager);
-            }
-        }
+            text.LoadContent(manager);
 
+
+        }
         public void AfterLoad(LoadingManager manager)
         {
             if (string.IsNullOrEmpty(Path))
@@ -60,31 +56,19 @@ namespace ISO.Core.UI.Elements
                 background = slicedSprite;
             }
 
-            foreach (var child in Childs)
-            {
-                var childUI = child as IUI;
-                childUI.AfterLoad(manager);
-            }
+            text.AfterLoad(manager);
 
         }
 
         public void Update(GameTime gameTime)
         {
-
+            text.Update(gameTime);
         }
 
         public void Draw(GameTime gameTime, SpriteBatch spriteBatch)
         {
             background.Draw(gameTime, spriteBatch);
-
-            foreach (var child in Childs)
-            {
-                var childUI = child as IUI;
-                childUI.Draw(gameTime, spriteBatch);
-            }
-
+            text.Draw(gameTime, spriteBatch);
         }
-
-
     }
 }

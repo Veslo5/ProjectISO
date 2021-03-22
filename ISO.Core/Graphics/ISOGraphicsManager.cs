@@ -65,7 +65,7 @@ namespace ISO.Core.Graphics
         /// <param name="fullscreen"></param>
         public void ChangeResolution(int width, int height, bool fullscreen)
         {
-            Log.Info("Changing resolution to " + width + " " + height);
+            Log.Info("Changing resolution to " + width + " " + height, LogModule.CR);
 
             this.PreferredBackBufferWidth = width;
             this.PreferredBackBufferHeight = height;

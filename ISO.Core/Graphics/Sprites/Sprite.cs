@@ -33,7 +33,7 @@ namespace ISO.Core.Graphics.Sprites
 
         public Sprite()
         {
-            Log.Warning("New Sprite loaded without texture");
+            Log.Warning("New Sprite loaded without texture", LogModule.CR);
         }
 
 

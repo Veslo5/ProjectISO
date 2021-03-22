@@ -39,7 +39,7 @@ namespace ISO.Core.UI.Elements
 
         public UIText(string name, string text = "", string fontName = "Default", int maxLineWidth = 1000)
         {
-            Log.Info("Creating UI Text " + name);
+            Log.Info("Creating UI Text " + name, LogModule.UI);   
             Name = name;
             this.fontName = "Fonts/" + fontName;
             this.text = text;

@@ -57,16 +57,16 @@ namespace ISO.Core.Scripting
         {
             if (IsEnabled == false)
             {
-                Log.Warning("Scripting is disabled for this scene.");
+                Log.Warning("Scripting is disabled for this scene.", LogModule.SC);
                 return;
             }
 
 
-            Log.Info("loading script " + name);
+            Log.Info("loading script " + name, LogModule.SC);
 
             var script = new IsoScript();
             script.Name = name;
-            script.Options.DebugPrint = output => Log.Script(output);
+            script.Options.DebugPrint = output => Log.Unique(output);
 
             SCRIPT dbScript = null;
 
@@ -77,7 +77,7 @@ namespace ISO.Core.Scripting
 
             if (dbScript == null)
             {
-                Log.Warning("Script not found... continuing without script");
+                Log.Warning("Script not found... continuing without script", LogModule.SC);
                 return;
             }
 
@@ -92,7 +92,7 @@ namespace ISO.Core.Scripting
         /// <param name="scriptName"></param>
         public void ReloadScript(string scriptName)
         {
-            Log.Warning("reloading script " + scriptName);
+            Log.Warning("reloading script " + scriptName, LogModule.SC);
 
             var script = ScriptHolder.FirstOrDefault(x => x.Name == scriptName);
 
@@ -132,7 +132,7 @@ namespace ISO.Core.Scripting
             }
             catch (Exception ex)
             {
-                Log.Error(ex.GetAllInnerExceptions());
+                Log.Error(ex.GetAllInnerExceptions(), LogModule.SC);
             }
         }
 

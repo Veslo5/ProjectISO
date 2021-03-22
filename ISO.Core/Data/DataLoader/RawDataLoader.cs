@@ -14,7 +14,7 @@ namespace ISO.Core.Data.DataLoader
         /// <returns></returns>
         public static Texture2D GetTextureFromFile(GraphicsDevice device, string path)
         {
-            Log.Info("Loading texture from Raw data " + path);
+            Log.Info("Loading texture from Raw data " + path, LogModule.CR);
 
             Texture2D texture;
             using (var stream = new FileStream(path, FileMode.Open))

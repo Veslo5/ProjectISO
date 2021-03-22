@@ -15,7 +15,7 @@ namespace ISO.Core.Settings
         {
             var path = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "config.json");
 
-            Log.Info("Loading config from path " + path);
+            Log.Info("Loading config from path " + path, LogModule.CR);
 
             var file = File.ReadAllText(path);
             var config = JsonConvert.DeserializeObject<Config>(file);

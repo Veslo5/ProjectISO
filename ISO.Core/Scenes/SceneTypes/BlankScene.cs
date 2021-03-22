@@ -40,7 +40,7 @@ namespace ISO.Core.Scenes.SceneTypes
 
         public virtual void LoadContent()
         {
-            Log.Info("Loading content from scene " + Name);
+            Log.Info("Loading content from scene " + Name, LogModule.CR);
 
             UI.LoadContent(Game);
             LuaProvider.InvokeLoad(Name);
@@ -74,7 +74,7 @@ namespace ISO.Core.Scenes.SceneTypes
 
         public virtual void UnloadContent()
         {
-            Log.Info("Unloading content from scene " + Name);
+            Log.Info("Unloading content from scene " + Name, LogModule.CR);
         }
 
         #endregion
@@ -88,7 +88,7 @@ namespace ISO.Core.Scenes.SceneTypes
         /// <param name="e"></param>
         public void GraphicsDevice_DeviceReset()
         {
-            Log.Info("Resolution changed on scene " + Name);
+            Log.Info("Resolution changed on scene " + Name, LogModule.CR);
             Camera.OnResolutionChange(Game.GraphicsDevice.Viewport);
             UICamera.OnResolutionChange(Game.GraphicsDevice.Viewport);
 
@@ -101,7 +101,7 @@ namespace ISO.Core.Scenes.SceneTypes
         /// <param name="e"></param>
         public void Window_ClientSizeChanged()
         {
-            Log.Info("Client size changed on scene " + Name);
+            Log.Info("Client size changed on scene " + Name, LogModule.CR);
 
             Camera.OnResolutionChange(Game.GraphicsDevice.Viewport);
             UICamera.OnResolutionChange(Game.GraphicsDevice.Viewport);

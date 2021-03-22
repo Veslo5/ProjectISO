@@ -125,6 +125,8 @@ namespace ISO.Core.Loading
                 throw new Exception("Cannot add more data into loading queue when loading is in progress.");
             }
 
+            Log.Info("Adding asset" + name + " to loading queue", LogModule.LO);
+
             var tType = typeof(T);
             if (tType.Equals(typeof(TextureAsset)))
             {
@@ -143,11 +145,11 @@ namespace ISO.Core.Loading
             }
             else if (tType.Equals(typeof(DataAsset)))
             {
-                Log.Error("Use PrepareDataTable() for DataAsset!");
+                Log.Error("Use PrepareDataTable() for DataAsset!", LogModule.LO);
             }
             else
             {
-                Log.Error("Unknow type, asset " + name + "was not loaded!");
+                Log.Error("Unknow type, asset " + name + "was not loaded!", LogModule.LO);
             }
         }
 
@@ -173,11 +175,11 @@ namespace ISO.Core.Loading
             }
             else if (tType.Equals(typeof(DataAsset)))
             {
-                Log.Error("Use UnloadCallback for DataAsset!");
+                Log.Error("Use UnloadCallback for DataAsset!", LogModule.LO);
             }
             else
             {
-                Log.Error("Unknow type, asset " + name + "was not loaded!");
+                Log.Error("Unknow type, asset " + name + "was not loaded!", LogModule.LO);
             }
         }
 
@@ -186,6 +188,8 @@ namespace ISO.Core.Loading
         /// </summary>
         public void StartLoadingAsync()
         {
+            Log.Info("Loading assets from loading queue asynchronously.", LogModule.LO);
+
             Task.Run(() =>
             {
                 LoadAssets();
@@ -197,6 +201,8 @@ namespace ISO.Core.Loading
         /// </summary>
         public void StartLoading()
         {
+            Log.Info("Loading assets from loading queue asynchronously.", LogModule.LO);
+
             LoadAssets();
         }
 
@@ -295,6 +301,7 @@ namespace ISO.Core.Loading
             {
                 callback.Value.Invoke();
             }
+
             LoadingCallBackInvoked = true;
 
             foreach (var texture in Textures)
@@ -315,6 +322,7 @@ namespace ISO.Core.Loading
                 AssetsLoaded++;
             }
 
+            Log.Info("Queue loading finished succesfully with " + AssetsLoaded + " assets loaded into memory", LogModule.LO);
 
             //Log.Warning("Sleeping for 5000ms");
             //Thread.Sleep(5000);
