@@ -58,7 +58,7 @@ namespace ISO.Core.Loading
         /// <summary>
         /// Flag when game is asynchronously loading data
         /// </summary>
-        public bool IsLoading { get; set; }
+        public bool IsLoading { get; set; } = true;
 
         /// <summary>
         /// When loading data is in progress cannot add more
@@ -279,6 +279,8 @@ namespace ISO.Core.Loading
         /// </summary>
         private void UnloadAssets()
         {
+            Log.Info("---------------------------UNLOADING---------------------------", LogModule.LO);
+
             IsLoading = true;
 
             List<string> keysToRemove = Textures.Where(x => x.Value.Unload == true).Select(x => x.Key).ToList();
@@ -287,13 +289,27 @@ namespace ISO.Core.Loading
             {
                 var textureAsset = Textures[key];
 
-                textureAsset.Texture.Dispose();
-                textureAsset.Texture = null;
+                Log.Info("Unloading texture asset " + key, LogModule.LO);
 
-                Textures.Remove(key);
+                if (textureAsset.Texture != null)
+                {
+                    if (!textureAsset.IsResourceCached)
+                    {
+                        textureAsset.Texture.Dispose();
+                        textureAsset.Texture = null;
+
+                        AssetsLoaded--;
+                    }
+                    else
+                    {
+                        Log.Warning("Texture asset " + key + " is using cached reference, continuing", LogModule.LO);
+                    }
+                }
 
                 AssetsCount--;
-                AssetsLoaded--;
+                Textures.Remove(key);
+                manager.RemoveCachedAsset(textureAsset.Path);
+
             }
 
             keysToRemove = Sounds.Where(x => x.Value.Unload == true).Select(x => x.Key).ToList();
@@ -302,13 +318,27 @@ namespace ISO.Core.Loading
             {
                 var soundAsset = Sounds[key];
 
-                soundAsset.Sound.Dispose();
-                soundAsset.Sound = null;
+                Log.Info("Unloading sound asset " + key, LogModule.LO);
 
-                Sounds.Remove(key);
+                if (soundAsset.Sound != null)
+                {
+                    if (!soundAsset.IsResourceCached)
+                    {
+                        soundAsset.Sound.Dispose();
+                        soundAsset.Sound = null;
+
+                        AssetsLoaded--;
+                    }
+                    else
+                    {
+                        Log.Warning("Sound asset " + key + " is using cached reference, continuing", LogModule.LO);
+                    }
+                }
 
                 AssetsCount--;
-                AssetsLoaded--;
+                Sounds.Remove(key);
+                manager.RemoveCachedAsset(soundAsset.Path);
+
             }
 
             keysToRemove = Fonts.Where(x => x.Value.Unload == true).Select(x => x.Key).ToList();
@@ -317,12 +347,26 @@ namespace ISO.Core.Loading
             {
                 var fontAsset = Fonts[key];
 
-                fontAsset.Font = null;
+                Log.Info("Unloading font asset " + key, LogModule.LO);
 
-                Fonts.Remove(key);
+                if (fontAsset.Font != null)
+                {
+                    if (!fontAsset.IsResourceCached)
+                    {
+                        fontAsset.Font = null;
+
+                        AssetsLoaded--;
+                    }
+                    else
+                    {
+                        Log.Warning("Font asset " + key + " is using cached reference, continuing", LogModule.LO);
+                    }
+                }
 
                 AssetsCount--;
-                AssetsLoaded--;
+                Fonts.Remove(key);
+                manager.RemoveCachedAsset(fontAsset.Path);
+
             }
 
             keysToRemove = DataCallback.Select(x => x.Key).ToList();
@@ -331,9 +375,13 @@ namespace ISO.Core.Loading
             {
                 DataCallback.Remove(key);
 
+                Log.Info("Unloading callback asset " + key, LogModule.LO);
+
                 AssetsCount--;
-                AssetsLoaded--;
             }
+
+            Log.Info("Unloading succeeded with current " + AssetsLoaded + " assets loaded", LogModule.LO);
+            Log.Info("Current amount of assets: " + AssetsCount, LogModule.LO);
 
             IsLoading = false;
         }
@@ -344,6 +392,8 @@ namespace ISO.Core.Loading
         /// </summary>
         private void LoadAssets()
         {
+            Log.Info("---------------------------LOADING---------------------------", LogModule.LO);
+
             IsLoading = true;
 
             foreach (var callback in DataCallback)
@@ -370,14 +420,34 @@ namespace ISO.Core.Loading
 
             Log.Info("Queue loading finished succesfully with " + AssetsLoaded + " assets loaded into memory", LogModule.LO);
 
-#if DEBUG
+
             Log.Warning("Loading paused for 5000ms for the sake of development!", LogModule.LO);
             Thread.Sleep(5000);
-#endif
+
 
             AfterLoadCallback.Invoke(this);
             IsLoading = false;
             LoadingCallBackInvoked = false;
+        }
+
+        public void MarkAllAsUnload()
+        {
+            Log.Warning("Marking all resources to unload! This action will erase everything from memory!", LogModule.LO);
+
+            foreach (var asset in Textures)
+            {
+                asset.Value.Unload = true;
+            }
+
+            foreach (var asset in Sounds)
+            {
+                asset.Value.Unload = true;
+            }
+
+            foreach (var asset in Fonts)
+            {
+                asset.Value.Unload = true;
+            }
         }
 
         private void loadTexture(KeyValuePair<string, TextureAsset> textureAsset)
@@ -387,7 +457,10 @@ namespace ISO.Core.Loading
                 if (!manager.IsAssetCached(textureAsset.Value.Path))
                     AssetsLoaded++;
                 else
+                {
+                    textureAsset.Value.IsResourceCached = true;
                     Log.Warning("Texture asset " + textureAsset.Key + " is already cached, skipping loading", LogModule.LO);
+                }
 
                 // if asset is already loaded, next loading with same Path value will return same once loaded object
                 textureAsset.Value.Texture = manager.Load<Texture2D>(textureAsset.Value.Path);
@@ -397,7 +470,7 @@ namespace ISO.Core.Loading
             {
                 Log.Error("Could not load texture resource for Asset " + textureAsset.Key, LogModule.LO);
                 Log.Error(ex.GetAllInnerExceptions(), LogModule.LO);
-                
+
                 AssetsLoaded--; // rollback
             }
         }
@@ -409,7 +482,10 @@ namespace ISO.Core.Loading
                 if (!manager.IsAssetCached(soundAsset.Value.Path))
                     AssetsLoaded++;
                 else
+                {
+                    soundAsset.Value.IsResourceCached = true;
                     Log.Warning("Sound asset " + soundAsset.Key + " is already cached, skipping loading", LogModule.LO);
+                }
 
                 // if asset is already loaded, next loading with same Path value will return same once loaded object
                 soundAsset.Value.Sound = manager.Load<SoundEffect>(soundAsset.Value.Path);
@@ -431,10 +507,13 @@ namespace ISO.Core.Loading
                 if (!manager.IsAssetCached(fontAsset.Value.Path)) // Check if asset is already loaded
                     AssetsLoaded++;
                 else
+                {
+                    fontAsset.Value.IsResourceCached = true;
                     Log.Warning("Font asset " + fontAsset.Key + " is already cached, skipping loading", LogModule.LO);
+                }
 
                 // if asset is already loaded, next loading with same Path value will return same once loaded object
-                fontAsset.Value.Font = manager.Load<SpriteFont>(fontAsset.Value.Path); 
+                fontAsset.Value.Font = manager.Load<SpriteFont>(fontAsset.Value.Path);
 
             }
             catch (Exception ex)
@@ -445,6 +524,8 @@ namespace ISO.Core.Loading
                 AssetsLoaded--; // rollback
             }
         }
+
+
 
     }
 }

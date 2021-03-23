@@ -42,7 +42,7 @@ namespace ISO.Core.UI
         /// <param name="name"></param>
         public void LoadJson()
         {
-            Log.Info("Loading UI file " + Manager.MapID, LogModule.LO); // LO because it is callback from loading
+            Log.Info("Loading UI file with ID: " + Manager.MapID, LogModule.LO); // LO because it is callback from loading
             using (var context = new ISODbContext(Dbpath))
             {
                 uiData = context.LoadTForMap<ISOUI>(Manager.MapID);
@@ -50,15 +50,15 @@ namespace ISO.Core.UI
 
             if (uiData == null)
             {
-                Log.Warning("UI file was not found. Continuing without UI.");
+                Log.Warning("UI file was not found. Continuing without UI.", LogModule.UI);
                 return;
             }
 
-#if DEBUG
+
             BuildUI(GenerateTestJSON());
-#else
-            BuildUI(uiData.DATA); // build UI
-#endif
+
+            //BuildUI(uiData.DATA); // build UI
+
 
             Manager.LoadContentForUIS();
 

@@ -30,6 +30,9 @@ namespace ProjectISO
                 var initScene = new ISO_Loader01("GROUND", 1, game, false);
                 game.SceneManager.AddNew(initScene);
 
+                var dummyScene = new ISO_Loader02("MENU", 2, game, false);
+                game.SceneManager.AddNew(dummyScene);
+
                 game.Run();
             }
 

@@ -93,5 +93,6 @@ namespace ISO.Core.UI
 
             uIHelper = new UIHelper(UIHolder);
         }
+
     }
 }

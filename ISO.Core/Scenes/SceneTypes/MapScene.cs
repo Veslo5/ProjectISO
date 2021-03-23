@@ -7,6 +7,8 @@ using ISO.Core.Tiled;
 using ISO.Core.UI;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using System;
+using System.Diagnostics;
 
 namespace ISO.Core.Scenes.SceneTypes
 {
@@ -14,7 +16,7 @@ namespace ISO.Core.Scenes.SceneTypes
     /// <summary>
     /// Scene
     /// </summary>
-    public class MapScene : Scene,  IScene
+    public class MapScene : Scene, IScene
     {
         #region Managers
 
@@ -26,8 +28,8 @@ namespace ISO.Core.Scenes.SceneTypes
         #endregion
 
         #region Constructor
-        public MapScene(string name, int id, ISOGame game, bool enableLuaScripting) : base(game ,name, id)
-        {                    
+        public MapScene(string name, int id, ISOGame game, bool enableLuaScripting) : base(game, name, id)
+        {
 
         }
         #endregion
@@ -35,6 +37,8 @@ namespace ISO.Core.Scenes.SceneTypes
         #region LoopEvents
         public virtual void Initialize()
         {
+            Log.Info("Initializing scene " + Name, LogModule.CR);
+
             SpriteBatch = new SpriteBatch(Game.GraphicsDevice);
 
             Camera = new OrthographicCamera(Game.GraphicsDevice.Viewport, Game.Config.VirtualResolution);
@@ -48,14 +52,13 @@ namespace ISO.Core.Scenes.SceneTypes
             UI = new UIManager(ID, Game.Config.DataPath, LoadingManager, Game.GraphicsDevice);
             Corountines = new CorountineManager();
 
-            Log.Info("Initializing scene " + Name, LogModule.CR);
             LuaProvider.InvokeInit(Name);
 
         }
 
         public virtual void LoadContent()
         {
-            Log.Info("Loading content from scene " + Name, LogModule.CR);
+            Log.Info("Loading content from scene " + Name, LogModule.LO);
 
             Map.LoadContent();
             UI.LoadContent(Game);
@@ -99,8 +102,15 @@ namespace ISO.Core.Scenes.SceneTypes
 
         public virtual void UnloadContent()
         {
-            Log.Info("Unloading content from scene " + Name, LogModule.CR);
+            using (Process proc = Process.GetCurrentProcess())
+            {                
+                Log.Unique("Total process memory:  " + proc.PrivateMemorySize64 / (1024f * 1024f) + " MB");                
+            }
 
+            Log.Unique("Heap memory before Unloading: " + GC.GetTotalMemory(false) / (1024f * 1024f) + " MB");
+            LoadingManager.StartUnloading();
+            GC.Collect();
+            Log.Unique("Heap Memory after Unloading: " + GC.GetTotalMemory(false) / (1024f * 1024f) + " MB");
 
         }
 

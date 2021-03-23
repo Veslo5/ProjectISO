@@ -48,6 +48,14 @@ namespace ISO.Core.Data.DataLoader
 
         }
 
+        /// <summary>
+        /// Remove cached file from content manager
+        /// </summary>
+        /// <param name="assetName"></param>
+        public void RemoveCachedAsset(string assetName)
+        {
+            this.LoadedAssets.Remove(assetName);
+        }
 
         /// <summary>
         /// Check if asset is already loaded in memory

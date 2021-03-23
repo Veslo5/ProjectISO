@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using ISO.Core.Engine.Logging;
+using System.Collections.Generic;
 using System.Linq;
 
 namespace ISO.Core.Scenes
@@ -48,10 +49,12 @@ namespace ISO.Core.Scenes
         /// <param name="name"></param>
         public void NextScene(string name)
         {
+            Log.Info("---------------------------SCENE CHANGE---------------------------", LogModule.LO);
             var upperName = name.ToUpper();
 
             CurrentScene.UnloadContent();
             CurrentScene = Scenes.FirstOrDefault(x => x.Name == upperName);
+            CurrentScene.Initialize();
             CurrentScene.LoadContent();
         }
 

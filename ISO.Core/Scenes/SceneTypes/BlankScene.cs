@@ -8,6 +8,7 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Text;
 
 namespace ISO.Core.Scenes.SceneTypes
@@ -25,6 +26,8 @@ namespace ISO.Core.Scenes.SceneTypes
 
         public virtual void Initialize()
         {
+            Log.Info("Initializing scene " + Name, LogModule.CR);
+
             SpriteBatch = new SpriteBatch(Game.GraphicsDevice);
 
             Camera = new OrthographicCamera(Game.GraphicsDevice.Viewport);
@@ -33,6 +36,7 @@ namespace ISO.Core.Scenes.SceneTypes
             LuaProvider = new LuaManager(Game.Config.DataPath, ID, false);
             LuaProvider.AddScript(Name);
 
+            LoadingManager = new LoadingManager(Game.Content);
             UI = new UIManager(ID, Game.Config.DataPath, LoadingManager, Game.GraphicsDevice);
             Corountines = new CorountineManager();
 
@@ -40,7 +44,7 @@ namespace ISO.Core.Scenes.SceneTypes
 
         public virtual void LoadContent()
         {
-            Log.Info("Loading content from scene " + Name, LogModule.CR);
+            Log.Info("Loading content from scene " + Name, LogModule.LO);
 
             UI.LoadContent(Game);
             LuaProvider.InvokeLoad(Name);
@@ -54,7 +58,7 @@ namespace ISO.Core.Scenes.SceneTypes
         {
             Camera.Update(); //TODO: Optimize and cache vector (change only when device change resolution)            
             UICamera.Update(); //TODO: Optimize and cache vector (change only when device change resolution)
-           
+
             Corountines.Update(gameTime);
             UI.Update(gameTime);
 
@@ -74,7 +78,15 @@ namespace ISO.Core.Scenes.SceneTypes
 
         public virtual void UnloadContent()
         {
-            Log.Info("Unloading content from scene " + Name, LogModule.CR);
+            using (Process proc = Process.GetCurrentProcess())
+            {
+                Log.Unique("Total process memory:  " + proc.PrivateMemorySize64 / (1024f * 1024f) + " MB");
+            }
+
+            Log.Unique("Heap memory before Unloading: " + GC.GetTotalMemory(false) / (1024f * 1024f) + " MB");
+            LoadingManager.StartUnloading();
+            GC.Collect();
+            Log.Unique("Heap Memory after Unloading: " + GC.GetTotalMemory(false) / (1024f * 1024f) + " MB");
         }
 
         #endregion

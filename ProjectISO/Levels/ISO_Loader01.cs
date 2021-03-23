@@ -119,8 +119,18 @@ namespace ProjectISO.Levels
             {
                 this.Game.Exit();
             }
+            else if (state.IsKeyDown(Keys.PageUp))
+            {
+                this.Game.SceneManager.NextScene("MENU");
+            }
 
             base.Update(gameTime);
+        }
+
+        public override void UnloadContent()
+        {
+            LoadingManager.MarkAllAsUnload();
+            base.UnloadContent();
         }
     }
 }
