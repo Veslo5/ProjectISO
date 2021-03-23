@@ -14,11 +14,11 @@ namespace ISO.Core.Engine.Helpers.Extensions.ErrorHandling
         {
             var sb = new StringBuilder();
 
-            sb.Append(ex.Message + Environment.NewLine);
+            sb.Append(ex.Message);
 
             while (ex.InnerException != null)
             {
-                sb.Append(ex.Message + Environment.NewLine);
+                sb.Append(ex.Message);
                 ex = ex.InnerException;
             }
 

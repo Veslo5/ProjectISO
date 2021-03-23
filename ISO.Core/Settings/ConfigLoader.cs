@@ -21,6 +21,12 @@ namespace ISO.Core.Settings
             var config = JsonConvert.DeserializeObject<Config>(file);
             config.DataPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Data", "galaxy_data.DAT");
 
+            Log.Info("Vsync = " + config.Vsync.ToString(), LogModule.CR);
+            Log.Info("Framecap = " + config.FrameCap, LogModule.CR);
+            
+            if (config.FrameCap < 1)
+            Log.Warning("FrameCap is unlimited! Is it really intended?" , LogModule.CR);
+
             return config;
         }
     }

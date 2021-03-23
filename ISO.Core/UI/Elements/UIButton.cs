@@ -15,13 +15,13 @@ namespace ISO.Core.UI.Elements
 {
     public class UIButton : UIControl, IUI
     {
-        public const string CONTENT_NAME = "UIBUTTON";        
+        public const string CONTENT_NAME = "UIBUTTON_";
 
         private GraphicsDevice device { get; }
         private UIText text { get; }
         private Sprite background { get; set; }
         private SpriteFont font { get; set; }
-        public string Path { get; set; }
+        public string ResourcePath { get; set; }
 
         public UIButton(string name, GraphicsDevice device)
         {
@@ -36,8 +36,8 @@ namespace ISO.Core.UI.Elements
         {
             DimensionsRectangle = new Rectangle(Position.X, Position.Y, Size.X, Size.Y);
 
-            if (!string.IsNullOrEmpty(Path))
-                manager.Load<TextureAsset>(CONTENT_NAME, Path);
+            if (!string.IsNullOrEmpty(ResourcePath))
+                manager.Load<TextureAsset>(CONTENT_NAME + Name, ResourcePath);
 
             text.LoadContent(manager);
 
@@ -45,15 +45,22 @@ namespace ISO.Core.UI.Elements
         }
         public void AfterLoad(LoadingManager manager)
         {
-            if (string.IsNullOrEmpty(Path))
+            if (string.IsNullOrEmpty(ResourcePath))
             {
                 background = new RectagleSprite(Color, device, DimensionsRectangle);
             }
             else
             {
-                var slicedSprite = new SlicedSprite(Color, manager.GetTexture(CONTENT_NAME).Texture, new Padding(6, 6, 6, 6));
-                slicedSprite.DestinationRectangle = DimensionsRectangle;
-                background = slicedSprite;
+                if (manager.GetTexture(CONTENT_NAME + Name).Texture != null)
+                {
+                    var slicedSprite = new SlicedSprite(Color, manager.GetTexture(CONTENT_NAME + Name).Texture, new Padding(6, 6, 6, 6));
+                    slicedSprite.DestinationRectangle = DimensionsRectangle;
+                    background = slicedSprite;
+                }
+                else
+                {
+                    background = new RectagleSprite(Color.Magenta, device, DimensionsRectangle);
+                }
             }
 
             text.AfterLoad(manager);

@@ -47,5 +47,14 @@ namespace ISO.Core.Data.DataLoader
             return stream;
 
         }
+
+
+        /// <summary>
+        /// Check if asset is already loaded in memory
+        /// </summary>
+        /// <param name="assetName"></param>
+        /// <returns></returns>
+        public bool IsAssetCached(string assetName) => this.LoadedAssets.ContainsKey(assetName);
+
     }
 }

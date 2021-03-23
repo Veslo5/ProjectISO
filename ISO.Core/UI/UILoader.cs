@@ -1,5 +1,6 @@
 ﻿using ISO.Core.Data.DataLoader.SqliteClient;
 using ISO.Core.Data.DataLoader.SqliteClient.Contracts;
+using ISO.Core.Engine.Helpers.Extensions.ErrorHandling;
 using ISO.Core.Engine.Logging;
 using ISO.Core.UI.Elements;
 using ISO.Core.UI.Elements.Base;
@@ -20,7 +21,7 @@ namespace ISO.Core.UI
         private ISOUI uiData { get; set; }
 
         public UILoader(UIManager manager, string dbpath)
-        {            
+        {
             Manager = manager;
             Dbpath = dbpath;
         }
@@ -41,7 +42,7 @@ namespace ISO.Core.UI
         /// <param name="name"></param>
         public void LoadJson()
         {
-            Log.Info("Loading UI file " + Manager.MapID, LogModule.UI);
+            Log.Info("Loading UI file " + Manager.MapID, LogModule.LO); // LO because it is callback from loading
             using (var context = new ISODbContext(Dbpath))
             {
                 uiData = context.LoadTForMap<ISOUI>(Manager.MapID);
@@ -53,19 +54,22 @@ namespace ISO.Core.UI
                 return;
             }
 
-            BuildUI();
+#if DEBUG
+            BuildUI(GenerateTestJSON());
+#else
+            BuildUI(uiData.DATA); // build UI
+#endif
 
             Manager.LoadContentForUIS();
 
             //TODO: clean uiData to null            
         }
 
-
-
-        public void BuildUI()
+        public void BuildUI(string inputJson)
         {
-            var jsonString = uiData.DATA;
+            Log.Info("Building UI", LogModule.UI);
 
+            var jsonString = inputJson;
             var deserializedJSON = JsonConvert.DeserializeObject<UIRoot>(jsonString);
 
             foreach (var control in deserializedJSON.Controls)
@@ -75,21 +79,47 @@ namespace ISO.Core.UI
 
         }
 
-
         private void AddControl(JObject control, UIControl parent)
         {
-            var typeInt = control.GetValue("Type").Value<int>();
-            var type = (JType)typeInt;
-
-            switch (type)
+            try
             {
-                case JType.TEXT:
-                    CreateText(control.ToObject<JText>(), parent);
-                    break;
-                case JType.PANEL:
-                    CreatePanel(control.ToObject<JPanel>(), parent);
-                    break;
+                var typeInt = control.GetValue("Type").Value<int>();
+                var type = (JType)typeInt;
+
+                switch (type)
+                {
+                    case JType.TEXT:
+                        CreateText(control.ToObject<JText>(), parent);
+                        break;
+                    case JType.PANEL:
+                        CreatePanel(control.ToObject<JPanel>(), parent);
+                        break;
+                    case JType.BUTTON:
+                        CreateButton(control.ToObject<JButton>(), parent);
+                        break;
+                }
             }
+            catch (Exception ex)
+            {
+                Log.Error("Definition of UI Object is corrupted! Continuing on next element.", LogModule.UI);
+                Log.Error(ex.GetAllInnerExceptions());
+            }
+        }
+
+        private void CreateButton(JButton jButton, UIControl parent)
+        {
+            var isoButton = new UIButton(jButton.Name, Manager.Device);
+
+            if (parent != null)
+                isoButton.Parent = parent;
+            else
+                Manager.AddUI(isoButton);
+
+            isoButton.Position = new Point(jButton.Position.X, jButton.Position.Y);
+            isoButton.Color = new Color(jButton.Color.R, jButton.Color.G, jButton.Color.B, jButton.Color.A);
+            isoButton.ZIndex = jButton.ZIndex;
+            isoButton.ResourcePath = jButton.ResourcePath;
+
         }
 
         /// <summary>
@@ -105,8 +135,8 @@ namespace ISO.Core.UI
             else
                 Manager.AddUI(ISOTextitem);
 
-            ISOTextitem.Position = new Point(text.X, text.Y);
-            ISOTextitem.Color = new Color(text.R, text.G, text.B);
+            ISOTextitem.Position = new Point(text.Position.X, text.Position.Y);
+            ISOTextitem.Color = new Color(text.Color.R, text.Color.G, text.Color.B, text.Color.A);
             ISOTextitem.ZIndex = text.ZIndex;
 
             Manager.AddUI(ISOTextitem);
@@ -120,7 +150,7 @@ namespace ISO.Core.UI
 
             if (parent != null)
             {
-                isoPanel.Parent = parent;               
+                isoPanel.Parent = parent;
                 (parent as UIPanel).Childs.Add(isoPanel);
             }
             else
@@ -128,11 +158,11 @@ namespace ISO.Core.UI
                 Manager.AddUI(isoPanel);
             }
 
-            isoPanel.Position = new Point(panel.X, panel.Y);
-            isoPanel.Size = new Point(panel.Width, panel.Height);
-            isoPanel.Color = new Color(panel.R, panel.G, panel.B);
+            isoPanel.Position = new Point(panel.Position.X, panel.Position.Y);
+            isoPanel.Size = new Point(panel.Scale.Width, panel.Scale.Height);
+            isoPanel.Color = new Color(panel.Color.R, panel.Color.G, panel.Color.B, panel.Color.A);
             isoPanel.ZIndex = panel.ZIndex;
-            isoPanel.Path = panel.Path;
+            isoPanel.ResourcePath = panel.ResourcePath;
 
             if (panel.Controls != null)
             {
@@ -144,6 +174,156 @@ namespace ISO.Core.UI
 
         }
 
+        private string GenerateTestJSON()
+        {
+            Log.Warning("UI is being builded from code, not from data!", LogModule.UI);
+
+            var json = new UIRoot() { Controls = new System.Collections.Generic.List<object>() };
+            var panel = new JPanel()
+            {
+                Name = "Panel",
+                Color = new ISO.Core.UI.JSONModels.Base.JColor()
+                {
+                    R = 255,
+                    G = 255,
+                    B = 255,
+                    A = 255
+                },
+                ResourcePath = "UI/Slice",
+                Type = ISO.Core.UI.JSONModels.Base.JType.PANEL,
+                Position = new ISO.Core.UI.JSONModels.Base.JPosition()
+                {
+                    X = 100,
+                    Y = 100
+                },
+                Scale = new ISO.Core.UI.JSONModels.Base.JScale()
+                {
+                    Width = 100,
+                    Height = 100,
+                },
+                Controls = new System.Collections.Generic.List<object>(),
+                ZIndex = 1
+
+            };
+
+            var panel2 = new JPanel()
+            {
+                Name = "Panel2",
+                Color = new ISO.Core.UI.JSONModels.Base.JColor()
+                {
+                    R = 255,
+                    G = 255,
+                    B = 255,
+                    A = 255
+                },
+                ResourcePath = "UI/Slice9",
+                Type = ISO.Core.UI.JSONModels.Base.JType.PANEL,
+                Scale = new ISO.Core.UI.JSONModels.Base.JScale()
+                {
+                    Width = 80,
+                    Height = 80,
+                },
+                Position = new ISO.Core.UI.JSONModels.Base.JPosition()
+                {
+                    X = 10,
+                    Y = 10,
+                },
+
+                ZIndex = 0
+            };
+
+            var panel3 = new JPanel()
+            {
+                Name = "Panel3",
+                Color = new ISO.Core.UI.JSONModels.Base.JColor()
+                {
+                    R = 255,
+                    G = 255,
+                    B = 255,
+                    A = 255
+                },
+                ResourcePath = "UI/Slice9",
+                Type = ISO.Core.UI.JSONModels.Base.JType.PANEL,
+                Position = new ISO.Core.UI.JSONModels.Base.JPosition()
+                {
+                    X = 10,
+                    Y = 10,
+                },
+                Scale = new ISO.Core.UI.JSONModels.Base.JScale()
+                {
+                    Width = 60,
+                    Height = 60,
+                },
+
+                ZIndex = 1
+
+            };
+
+
+
+            var panel4 = new JPanel()
+            {
+                Name = "panel4",
+                Color = new ISO.Core.UI.JSONModels.Base.JColor()
+                {
+                    R = 255,
+                    G = 255,
+                    B = 255,
+                    A = 255
+                },
+                Type = ISO.Core.UI.JSONModels.Base.JType.PANEL,
+                Position = new ISO.Core.UI.JSONModels.Base.JPosition()
+                {
+                    X = 150,
+                    Y = 150,
+                },
+                Scale = new ISO.Core.UI.JSONModels.Base.JScale()
+                {
+                    Width = 100,
+                    Height = 100,
+                },
+                ZIndex = 0,
+                ResourcePath = "UI/Slice9",
+                Controls = new System.Collections.Generic.List<object>(),
+            };
+
+            var panel5 = new JPanel()
+            {
+                Name = "panel5",
+                Color = new ISO.Core.UI.JSONModels.Base.JColor()
+                {
+                    R = 255,
+                    G = 255,
+                    B = 255,
+                    A = 255
+                },
+                Type = ISO.Core.UI.JSONModels.Base.JType.PANEL,
+                Position = new ISO.Core.UI.JSONModels.Base.JPosition()
+                {
+                    X = 10,
+                    Y = 10,
+                },
+                Scale = new ISO.Core.UI.JSONModels.Base.JScale()
+                {
+                    Width = 80,
+                    Height = 80,
+                },
+                ZIndex = 1,
+                ResourcePath = "UI/Slice9",
+                Controls = new System.Collections.Generic.List<object>(),
+            };
+
+            panel.Controls.Add(panel2);
+            panel.Controls.Add(panel3);
+            panel4.Controls.Add(panel5);
+
+            json.Controls.Add(panel);
+            json.Controls.Add(panel4);
+
+            var jsonString = JsonConvert.SerializeObject(json);
+
+            return jsonString;
+        }
     }
 
 }

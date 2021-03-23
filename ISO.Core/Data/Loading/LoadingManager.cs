@@ -1,4 +1,5 @@
 ﻿using ISO.Core.Data.DataLoader;
+using ISO.Core.Engine.Helpers.Extensions.ErrorHandling;
 using ISO.Core.Engine.Logging;
 using ISO.Core.Loading.Assets;
 using Microsoft.Xna.Framework.Audio;
@@ -80,21 +81,61 @@ namespace ISO.Core.Loading
         /// </summary>
         /// <param name="name"></param>
         /// <returns></returns>
-        public TextureAsset GetTexture(string name) => Textures[name];
+        public TextureAsset GetTexture(string name)
+        {
+            TextureAsset value = null;
+
+            if (Textures.TryGetValue(name, out value))
+            {
+                return value;
+            }
+            else
+            {
+                Log.Error("Texture asset " + name + "not found!");
+                return null;
+            }
+
+        }
 
         /// <summary>
         /// Returns loaded sound
         /// </summary>
         /// <param name="name"></param>
         /// <returns></returns>
-        public SoundAsset GetSound(string name) => Sounds[name];
+        public SoundAsset GetSound(string name)
+        {
+            SoundAsset value = null;
+
+            if (Sounds.TryGetValue(name, out value))
+            {
+                return value;
+            }
+            else
+            {
+                Log.Error("Sound asset " + name + "not found!");
+                return null;
+            }
+        }
 
         /// <summary>
         /// returns loaded fonts
         /// </summary>
         /// <param name="name"></param>
         /// <returns></returns>
-        public FontAsset GetFont(string name) => Fonts[name];
+        public FontAsset GetFont(string name)
+        {
+            FontAsset value = null;
+
+            if (Fonts.TryGetValue(name, out value))
+            {
+                return value;
+            }
+            else
+            {
+                Log.Error("Font asset " + name + "not found!");
+                return null;
+            }
+        }
 
         /// <summary>
         /// Load loading callback
@@ -125,23 +166,31 @@ namespace ISO.Core.Loading
                 throw new Exception("Cannot add more data into loading queue when loading is in progress.");
             }
 
-            Log.Info("Adding asset" + name + " to loading queue", LogModule.LO);
 
             var tType = typeof(T);
             if (tType.Equals(typeof(TextureAsset)))
             {
-                Textures.TryAdd(name, new TextureAsset(path));
-                AssetsCount++;
+                if (Textures.TryAdd(name, new TextureAsset(path)))
+                {
+                    AssetsCount++;
+                    Log.Info("Added texture asset " + name + " to loading queue", LogModule.LO);
+                }
             }
             else if (tType.Equals(typeof(SoundAsset)))
             {
-                Sounds.TryAdd(name, new SoundAsset(path));
-                AssetsCount++;
+                if (Sounds.TryAdd(name, new SoundAsset(path)))
+                {
+                    AssetsCount++;
+                    Log.Info("Added sound asset " + name + " to loading queue", LogModule.LO);
+                }
             }
             else if (tType.Equals(typeof(FontAsset)))
             {
-                Fonts.TryAdd(name, new FontAsset(path));
-                AssetsCount++;
+                if (Fonts.TryAdd(name, new FontAsset(path)))
+                {
+                    AssetsCount++;
+                    Log.Info("Added font asset " + name + " to loading queue", LogModule.LO);
+                }
             }
             else if (tType.Equals(typeof(DataAsset)))
             {
@@ -306,30 +355,96 @@ namespace ISO.Core.Loading
 
             foreach (var texture in Textures)
             {
-                texture.Value.Texture = manager.Load<Texture2D>(texture.Value.Path);
-                AssetsLoaded++;
+                loadTexture(texture);
             }
 
             foreach (var sound in Sounds)
             {
-                sound.Value.Sound = manager.Load<SoundEffect>(sound.Value.Path);
-                AssetsLoaded++;
+                loadSound(sound);
             }
 
             foreach (var font in Fonts)
             {
-                font.Value.Font = manager.Load<SpriteFont>(font.Value.Path);
-                AssetsLoaded++;
+                loadFont(font);
             }
 
             Log.Info("Queue loading finished succesfully with " + AssetsLoaded + " assets loaded into memory", LogModule.LO);
 
-            //Log.Warning("Sleeping for 5000ms");
-            //Thread.Sleep(5000);
+#if DEBUG
+            Log.Warning("Loading paused for 5000ms for the sake of development!", LogModule.LO);
+            Thread.Sleep(5000);
+#endif
 
             AfterLoadCallback.Invoke(this);
             IsLoading = false;
             LoadingCallBackInvoked = false;
         }
+
+        private void loadTexture(KeyValuePair<string, TextureAsset> textureAsset)
+        {
+            try
+            {
+                if (!manager.IsAssetCached(textureAsset.Value.Path))
+                    AssetsLoaded++;
+                else
+                    Log.Warning("Texture asset " + textureAsset.Key + " is already cached, skipping loading", LogModule.LO);
+
+                // if asset is already loaded, next loading with same Path value will return same once loaded object
+                textureAsset.Value.Texture = manager.Load<Texture2D>(textureAsset.Value.Path);
+
+            }
+            catch (Exception ex)
+            {
+                Log.Error("Could not load texture resource for Asset " + textureAsset.Key, LogModule.LO);
+                Log.Error(ex.GetAllInnerExceptions(), LogModule.LO);
+                
+                AssetsLoaded--; // rollback
+            }
+        }
+
+        private void loadSound(KeyValuePair<string, SoundAsset> soundAsset)
+        {
+            try
+            {
+                if (!manager.IsAssetCached(soundAsset.Value.Path))
+                    AssetsLoaded++;
+                else
+                    Log.Warning("Sound asset " + soundAsset.Key + " is already cached, skipping loading", LogModule.LO);
+
+                // if asset is already loaded, next loading with same Path value will return same once loaded object
+                soundAsset.Value.Sound = manager.Load<SoundEffect>(soundAsset.Value.Path);
+
+            }
+            catch (Exception ex)
+            {
+                Log.Error("Could not load sound resource for Asset " + soundAsset.Key, LogModule.LO);
+                Log.Error(ex.GetAllInnerExceptions(), LogModule.LO);
+
+                AssetsLoaded--; // rollback
+            }
+        }
+
+        private void loadFont(KeyValuePair<string, FontAsset> fontAsset)
+        {
+            try
+            {
+                if (!manager.IsAssetCached(fontAsset.Value.Path)) // Check if asset is already loaded
+                    AssetsLoaded++;
+                else
+                    Log.Warning("Font asset " + fontAsset.Key + " is already cached, skipping loading", LogModule.LO);
+
+                // if asset is already loaded, next loading with same Path value will return same once loaded object
+                fontAsset.Value.Font = manager.Load<SpriteFont>(fontAsset.Value.Path); 
+
+            }
+            catch (Exception ex)
+            {
+                Log.Error("Could not load font resource for Asset " + fontAsset.Key, LogModule.LO);
+                Log.Error(ex.GetAllInnerExceptions(), LogModule.LO);
+
+                AssetsLoaded--; // rollback
+            }
+        }
+
     }
 }

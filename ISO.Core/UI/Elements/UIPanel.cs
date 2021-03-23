@@ -16,12 +16,12 @@ namespace ISO.Core.UI.Elements
 {
     public class UIPanel : UIControl, IUI
     {
-        public const string CONTENT_NAME = "UIPANEL";
+        public const string CONTENT_NAME = "UIPANEL_";
 
         private Sprite background { get; set; }
         private GraphicsDevice device { get; }
 
-        public string Path { get; set; }
+        public string ResourcePath { get; set; }
 
         public List<UIControl> Childs { get; set; } = new List<UIControl>();
 
@@ -36,8 +36,8 @@ namespace ISO.Core.UI.Elements
         {
             DimensionsRectangle = new Rectangle(Position.X, Position.Y, Size.X, Size.Y);
 
-            if (!string.IsNullOrEmpty(Path))
-                manager.Load<TextureAsset>(CONTENT_NAME, Path);
+            if (!string.IsNullOrEmpty(ResourcePath))
+                manager.Load<TextureAsset>(CONTENT_NAME + Name, ResourcePath);
 
             Childs = Childs.OrderBy(x => x.ZIndex).ToList(); // Make Sure that ZIndex is sorted by the right way
             foreach (var child in Childs)
@@ -49,15 +49,23 @@ namespace ISO.Core.UI.Elements
 
         public void AfterLoad(LoadingManager manager)
         {
-            if (string.IsNullOrEmpty(Path))
+            if (string.IsNullOrEmpty(ResourcePath))
             {
                 background = new RectagleSprite(Color, device, DimensionsRectangle);
             }
             else
             {
-                var slicedSprite = new SlicedSprite(Color, manager.GetTexture(CONTENT_NAME).Texture, new Padding(6, 6, 6, 6));
-                slicedSprite.DestinationRectangle = DimensionsRectangle;
-                background = slicedSprite;
+                if (manager.GetTexture(CONTENT_NAME + Name).Texture != null)
+                {
+                    var slicedSprite = new SlicedSprite(Color, manager.GetTexture(CONTENT_NAME + Name).Texture, new Padding(6, 6, 6, 6));
+                    slicedSprite.DestinationRectangle = DimensionsRectangle;
+                    background = slicedSprite;
+                }
+                else
+                {
+                    background = new RectagleSprite(Color.Magenta, device, DimensionsRectangle);
+                }
+
             }
 
             foreach (var child in Childs)
