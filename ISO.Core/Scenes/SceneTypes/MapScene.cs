@@ -7,6 +7,7 @@ using ISO.Core.Tiled;
 using ISO.Core.UI;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using Microsoft.Xna.Framework.Input;
 using System;
 using System.Diagnostics;
 
@@ -72,6 +73,15 @@ namespace ISO.Core.Scenes.SceneTypes
             UI.AfterLoad(manager);
         }
 
+        /// <summary>
+        /// WARNING: Do not make this overrideable!
+        /// </summary>
+        /// <param name="gameTime"></param>
+        public void BeforeUpdate(GameTime gameTime)
+        {            
+            Game.Input.BeforeUpdate();
+        }
+
         public virtual void Update(GameTime gameTime)
         {
             Camera.Update(); //TODO: Optimize and cache vector (change only when device change resolution)            
@@ -83,6 +93,16 @@ namespace ISO.Core.Scenes.SceneTypes
             UI.Update(gameTime);
 
             LuaProvider.InvokeUpdate(Name);
+        }
+
+        /// <summary>
+        /// WARNING: Do not make this overrideable!
+        /// </summary>
+        /// <param name="gameTime"></param>
+        public void AfterUpdate(GameTime gameTime)
+        {
+            Game.Input.AfterUpdate();
+            Game.Window.Title = "FPS " + 1 / gameTime.ElapsedGameTime.TotalSeconds;
         }
 
         public virtual void Draw(GameTime gameTime)
@@ -97,14 +117,13 @@ namespace ISO.Core.Scenes.SceneTypes
 
             LuaProvider.InvokeDraw(Name);
 
-            Game.Window.Title = "FPS " + 1 / gameTime.ElapsedGameTime.TotalSeconds;
         }
 
         public virtual void UnloadContent()
         {
             using (Process proc = Process.GetCurrentProcess())
-            {                
-                Log.Unique("Total process memory:  " + proc.PrivateMemorySize64 / (1024f * 1024f) + " MB");                
+            {
+                Log.Unique("Total process memory:  " + proc.PagedMemorySize64 / (1024f * 1024f) + " MB");
             }
 
             Log.Unique("Heap memory before Unloading: " + GC.GetTotalMemory(false) / (1024f * 1024f) + " MB");
@@ -141,6 +160,7 @@ namespace ISO.Core.Scenes.SceneTypes
             Camera.OnResolutionChange(Game.GraphicsDevice.Viewport);
             UICamera.OnResolutionChange(Game.GraphicsDevice.Viewport);
         }
+
 
         #endregion
 

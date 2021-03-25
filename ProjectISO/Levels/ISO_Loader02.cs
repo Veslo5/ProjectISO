@@ -53,11 +53,9 @@ namespace ProjectISO.Levels
         public override void Update(GameTime gameTime)
         {
             if (LoadingManager.IsLoading)
-                return;
+                return;            
 
-            var state = Keyboard.GetState();
-
-            if (state.IsKeyDown(Keys.PageUp))
+            if (Game.Input.IsVirtualButtonPressed("NextScene"))
             {
                 this.Game.SceneManager.NextScene("GROUND");
             }

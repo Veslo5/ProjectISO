@@ -52,17 +52,9 @@ namespace ProjectISO.Levels
             if (LoadingManager.IsLoading)
                 return;
 
-            var state = Keyboard.GetState();
-            var mouse = Mouse.GetState();
-
-            var world = Camera.ScreenToWorldSpace(mouse.Position.ToVector2());
-
-            //Game.Window.Title = "Screen " + mouse.X + "x" + mouse.Y + "World " + world.X + "x" + world.Y ;
-
-
-            if (mouse.LeftButton == ButtonState.Pressed)
+            if (Game.Input.IsLeftMouseButtonPressed())
             {
-                var controls = UI.GetUIOnPosition(mouse.Position);
+                var controls = UI.GetUIOnPosition(Game.Input.MousePosition);
 
                 if (controls == null)
                     Log.Write("none");
@@ -71,55 +63,53 @@ namespace ProjectISO.Levels
 
             }
 
-
-
-
-            if (state.IsKeyDown(Keys.W))
+           
+            if (Game.Input.IsVirtualButtonDown("ZoomIn"))
             {
                 Camera.Zooom += (float)gameTime.ElapsedGameTime.TotalSeconds;
             }
-            else if (state.IsKeyDown(Keys.S))
+            else if (Game.Input.IsVirtualButtonDown("ZoomOut"))
             {
                 Camera.Zooom -= (float)gameTime.ElapsedGameTime.TotalSeconds;
             }
-            else if (state.IsKeyDown(Keys.Q))
+            else if (Game.Input.IsVirtualButtonDown("RotateLeft"))
             {
                 Camera.Rotation += (float)gameTime.ElapsedGameTime.TotalSeconds;
             }
-            else if (state.IsKeyDown(Keys.E))
+            else if (Game.Input.IsVirtualButtonDown("RotateRight"))
             {
                 Camera.Rotation -= (float)gameTime.ElapsedGameTime.TotalSeconds;
             }
-            else if (state.IsKeyDown(Keys.Space))
+            else if (Game.Input.IsVirtualButtonPressed("DefaultView"))
             {
                 //TODO: Testing
                 Camera.Reset();
             }
-            else if (state.IsKeyDown(Keys.Y))
+            else if (Game.Input.IsVirtualButtonPressed("ResolutionTest"))
             {
                 Game.Graphics.ChangeResolution(1366, 768, false);
             }
-            else if (state.IsKeyDown(Keys.Up))
+            else if (Game.Input.IsVirtualButtonDown("Up")) // Up
             {
                 Camera.Position -= Vector2.UnitY * ((float)gameTime.ElapsedGameTime.TotalSeconds * 1000);
             }
-            else if (state.IsKeyDown(Keys.Down))
+            else if (Game.Input.IsVirtualButtonDown("Down")) // Down
             {
                 Camera.Position += Vector2.UnitY * ((float)gameTime.ElapsedGameTime.TotalSeconds * 1000);
             }
-            else if (state.IsKeyDown(Keys.Left))
+            else if (Game.Input.IsVirtualButtonDown("Left")) // Left
             {
                 Camera.Position -= Vector2.UnitX * ((float)gameTime.ElapsedGameTime.TotalSeconds * 1000);
             }
-            else if (state.IsKeyDown(Keys.Right))
+            else if (Game.Input.IsVirtualButtonDown("Right")) // Right
             {
                 Camera.Position += Vector2.UnitX * ((float)gameTime.ElapsedGameTime.TotalSeconds * 1000);
             }
-            else if (state.IsKeyDown(Keys.Escape))
+            else if (Game.Input.IsVirtualButtonPressed("Exit"))
             {
                 this.Game.Exit();
             }
-            else if (state.IsKeyDown(Keys.PageUp))
+            else if (Game.Input.IsVirtualButtonPressed("NextScene"))
             {
                 this.Game.SceneManager.NextScene("MENU");
             }

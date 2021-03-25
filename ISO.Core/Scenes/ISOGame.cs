@@ -1,5 +1,6 @@
 ﻿using ISO.Core.Data.DataLoader;
 using ISO.Core.Graphics;
+using ISO.Core.Input;
 using ISO.Core.Settings;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -28,6 +29,11 @@ namespace ISO.Core.Scenes
         public new ISOContentManager Content { get; set; }
 
         /// <summary>
+        /// Input manager
+        /// </summary>
+        public InputManager Input { get; set; }
+
+        /// <summary>
         /// App configuration
         /// </summary>
         public Config Config { get; }
@@ -37,6 +43,7 @@ namespace ISO.Core.Scenes
             Config = config;
             SceneManager = new SceneManager(this);
             Graphics = new ISOGraphicsManager(this, config.Width, config.Height, config.Vsync, config.FrameCap);
+            Input = new InputManager();
 
             Content = new ISOContentManager(base.Content.ServiceProvider);
             Content.RootDirectory = "Content";
@@ -93,8 +100,9 @@ namespace ISO.Core.Scenes
         /// <param name="gameTime"></param>
         protected override void Update(GameTime gameTime)
         {
-            SceneManager.CurrentScene.Update(gameTime);
-            base.Update(gameTime);
+            SceneManager.CurrentScene.BeforeUpdate(gameTime); // We have to ensure that our code go before overrideable update
+            SceneManager.CurrentScene.Update(gameTime);            
+            SceneManager.CurrentScene.AfterUpdate(gameTime); // We have to ensure that our code go after overrideable update
         }
 
 
@@ -112,8 +120,7 @@ namespace ISO.Core.Scenes
         /// <param name="gameTime"></param>
         protected override void Draw(GameTime gameTime)
         {
-            SceneManager.CurrentScene.Draw(gameTime);
-            base.Draw(gameTime);
+            SceneManager.CurrentScene.Draw(gameTime);            
         }
     }
 }

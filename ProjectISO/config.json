@@ -4,7 +4,7 @@
   "Fullscreen": false,
   "DataPath": ".",
   "DataInit": false,
-  "Vsync": false,
+  "Vsync": true,
   "FrameCap": -1,
   "VirtualResolution" : false
 }
