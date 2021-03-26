@@ -45,6 +45,12 @@ namespace ISO.Core.Data.DataLoader.SqliteClient
             return Table<MAP_DATA>().FirstOrDefault(x => x.MAP == mapID && x.TYPE == typeString);
         }
 
+        public List<MAP_DATA> LoadMapDataByTypes(int mapID, MapDataTypes type)
+        {
+            var typeString = Enum.GetName(typeof(MapDataTypes), type);
+            return Table<MAP_DATA>().Where(x => x.MAP == mapID && x.TYPE == typeString).ToList();
+        }
+
         public T LoadTForMap<T>(int mapID) where T : IMapRelated, new()
         {
             return Table<T>().FirstOrDefault(x => x.MAP == mapID);

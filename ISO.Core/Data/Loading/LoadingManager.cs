@@ -421,8 +421,8 @@ namespace ISO.Core.Loading
             Log.Info("Queue loading finished succesfully with " + AssetsLoaded + " assets loaded into memory", LogModule.LO);
 
 
-            Log.Warning("Loading paused for 5000ms for the sake of development!", LogModule.LO);
-            Thread.Sleep(5000);
+            //Log.Warning("Loading paused for 5000ms for the sake of development!", LogModule.LO);
+            //Thread.Sleep(5000);
 
 
             AfterLoadCallback.Invoke(this);

@@ -13,6 +13,8 @@ using Microsoft.Xna.Framework.Input;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
+using System.IO;
+using System.Linq;
 
 namespace ISO.Core.Tiled
 {
@@ -20,13 +22,10 @@ namespace ISO.Core.Tiled
     {
         private LoadingManager content { get; }
         private ISOTiledMap MapMetadata { get; set; }
-        private ISOTiledPicture MapImage { get; set; }
 
         private List<TileSprite[][]> AtlasSprites { get; set; } = new List<TileSprite[][]>(); // [row][column]
 
         OrthographicCamera Camera { get; set; }
-
-        private Atlas ImageAtlas { get; set; }
         private int ID { get; }
         private string Path { get; }
 
@@ -43,54 +42,105 @@ namespace ISO.Core.Tiled
         public void LoadContent()
         {
             content.LoadCallback("MAP_DATA", LoadMapData);
-            content.Load<TextureAsset>("MAP", "MAP" + "/GROUND/" + "sd1");
         }
 
         public void LoadMapData()
         {
             using (var context = new ISODbContext(Path))
             {
-                var filemapJson = context.LoadMapDataByType(ID, MapDataTypes.MAP).DATA;
-                MapMetadata = JsonConvert.DeserializeObject<ISOTiledMap>(filemapJson);
+                var filemapJson = context.LoadMapDataByType(ID, MapDataTypes.MAP);
+                MapMetadata = JsonConvert.DeserializeObject<ISOTiledMap>(filemapJson.DATA); // tileset metadata are now in map metadata (use options in tiled!)                                
 
-                var filepicJson = context.LoadMapDataByType(ID, MapDataTypes.PICTURE).DATA;
-                MapImage = JsonConvert.DeserializeObject<ISOTiledPicture>(filepicJson);
+                Log.Info("Creating map " +  MapMetadata.width + "x" + MapMetadata.height + " with " + MapMetadata.layers.Count + " layers" , LogModule.CR);
+                Log.Info("Map references " + MapMetadata.tilesets.Count + " tilesets" , LogModule.CR);
+
+                foreach (var tileSet in MapMetadata.tilesets)
+                {
+                    // Every loaded image for tilemap should have _TILESET suffix to make it recognizable.
+
+                    // TODO: we need to create better system to connect content data with map metadata
+                    // Or at least our layers should have another names than tilesets.
+                    // We could create system to separate tilesets from Map metada - because it is bloated (tiled already support this)
+                    // many maps can share same tilesets, but right now every map has own tilesets in metada - so we basically copying data in json
+
+                    // And yeah in loading callback you can still add another resources to loading queue
+                    // Just for case if you read some metadata and need to load something based on reference from it
+                    content.Load<TextureAsset>(tileSet.name + "_TILESET", "MAP" + "/TILESET/" + tileSet.name);
+                }
             }
         }
 
         public void AfterLoad(LoadingManager manager)
         {
-            CreateMap(content.GetTexture("MAP").Texture);
+            foreach (var tileset in MapMetadata.tilesets)
+            {
+                tileset.ImageAtlas = new Atlas(content.GetTexture(tileset.name + "_TILESET").Texture, tileset.columns, tileset.imageheight / tileset.tileheight);
+            }
+
+            CreateMap();
         }
 
 
-        private void CreateMap(Texture2D image)
+        private void CreateMap()
         {
-            ImageAtlas = new Atlas(image, MapImage.columns, MapImage.imageheight / MapImage.tileheight);
 
             foreach (var layer in MapMetadata.layers)
             {
                 var rows = new TileSprite[layer.height][]; // All maps will be 1:1 so...
 
-                for (int r = 0; r < layer.height; r++)
+                for (int r = 0; r < layer.height; r++) // r = row
                 {
                     var columns = new TileSprite[layer.width];
 
-                    for (int c = 0; c < layer.width; c++)
+                    for (int c = 0; c < layer.width; c++) // c = column
                     {
-                        var id = layer.data[(r * layer.height) + c];
+                        var id = layer.data[(r * layer.height) + c]; // calculating from 1D array indexes to 2D array X,Y
 
-                        if (id != 0)
+                        if (id != 0) // adding tiles only if have some image (0 = blank tile)
                         {
-                            var asprite = ImageAtlas.AtlasSprites[id - 1];
 
-                            var newasprite = new TileSprite(asprite.Texture, asprite.PositionX, asprite.PositionY, ImageAtlas.TileWidth, ImageAtlas.TileHeight, r, c);
-                            var x = ((c * ImageAtlas.TileWidth) / 2) - ((r * ImageAtlas.TileWidth) / 2);
-                            var y = ((r * ImageAtlas.TileHeight) / 2) + ((c * ImageAtlas.TileHeight) / 2);
-                            newasprite.destinationRectangle = new Rectangle(x, y, ImageAtlas.TileWidth, ImageAtlas.TileHeight);
+                            AtlasSprite asprite = null;
 
-                            columns[c] = newasprite;
+                            //TODO: We should create method and refactor this ugly thing... its kinda bloated :)!
 
+                            foreach (var tileSet in MapMetadata.tilesets) // we can loop trough all tileset and have all informations there.
+                            {
+                                if (id >= tileSet.firstgid && id < (tileSet.firstgid + tileSet.tilecount)) // Check if tiled ID from array index is in this tileset indexing 
+                                {
+                                    int tilesetAtlasId;
+
+                                    if (tileSet.firstgid != 1) // if it is not starting one tileset
+                                    {
+                                        tilesetAtlasId = id - tileSet.firstgid;
+                                    }
+                                    else // We need to do that everytime when tilemap indexing is on 1 (starting one)
+                                    {
+                                        tilesetAtlasId = id - 1;
+                                    }
+
+                                    asprite = tileSet.ImageAtlas.AtlasSprites[tilesetAtlasId]; //Get tile from atlas by ID
+
+                                    var ImageAtlas = tileSet.ImageAtlas;
+
+                                    // Create tile sprite with reference to Atlas image (batching purposes)
+                                    var newasprite = new TileSprite(asprite.Texture, asprite.PositionX, asprite.PositionY, ImageAtlas.TileWidth, ImageAtlas.TileHeight, r, c);
+
+                                    //X and Y diamond position rendering (rendering right-down)
+                                    var x = ((c * MapMetadata.tilewidth) / 2) - ((r * MapMetadata.tilewidth) / 2);
+                                    var y = ((r * MapMetadata.tileheight) / 2) + ((c * MapMetadata.tileheight) / 2);
+
+                                    // Walls or any 3 time higher tile need to have this offset to be rendered properly
+                                    // Basic tiles which have same height as map grid does not need offset
+                                    if (ImageAtlas.TileHeight - MapMetadata.tileheight != 0)
+                                    {
+                                        y -= ImageAtlas.TileHeight - MapMetadata.tileheight;
+                                    }
+
+                                    newasprite.destinationRectangle = new Rectangle(x, y, ImageAtlas.TileWidth, ImageAtlas.TileHeight); // destination rectangle X,Y and Size
+
+                                    columns[c] = newasprite;
+                                }
+                            }
 
                         }
                     }
@@ -98,7 +148,7 @@ namespace ISO.Core.Tiled
                     rows[r] = columns; // we must assing column to its array position everytime at the end 
                 }
 
-                AtlasSprites.Add(rows);
+                AtlasSprites.Add(rows); // aaand finally adding our nicely cooked layer
 
             }
         }
@@ -160,24 +210,9 @@ namespace ISO.Core.Tiled
             }
         }
 
-        public void Draw(GameTime time, SpriteBatch batch)
-        {
-
-            var cameraPosOnWorldTopLeft = Camera.ScreenToWorldSpace(new Vector2(-128, -64));
-            var tileOnTopLeft = GetTileOnWorld((int)cameraPosOnWorldTopLeft.X, (int)cameraPosOnWorldTopLeft.Y);
-
-            var cameraPosOnWorldBottomRight = Camera.ScreenToWorldSpace(new Vector2(Camera.viewport.Width + 128, Camera.viewport.Height + 64));
-            var tileOnPosBottomRight = GetTileOnWorld((int)cameraPosOnWorldBottomRight.X, (int)cameraPosOnWorldBottomRight.Y);
-
-            //Log.Write(tileOnTopLeft.ToString() + " " + cameraPosOnWorldTopLeft.ToString());
-
-            DrawTiles(tileOnTopLeft, tileOnPosBottomRight, time, batch);
-
-        }
-
-
         public void Update()
         {
+            //TODO: refactor this with Game.Input reference
             var state = Mouse.GetState();
             var ks = Keyboard.GetState();
 
@@ -197,6 +232,22 @@ namespace ISO.Core.Tiled
             }
 
 
+
+        }
+
+        public void Draw(GameTime time, SpriteBatch batch)
+        {
+
+            //TODO: We need to remove this 128 and 64 constants
+            var cameraPosOnWorldTopLeft = Camera.ScreenToWorldSpace(new Vector2(-128, -64));
+            var tileOnTopLeft = GetTileOnWorld((int)cameraPosOnWorldTopLeft.X, (int)cameraPosOnWorldTopLeft.Y);
+
+            var cameraPosOnWorldBottomRight = Camera.ScreenToWorldSpace(new Vector2(Camera.viewport.Width + 128, Camera.viewport.Height + 64));
+            var tileOnPosBottomRight = GetTileOnWorld((int)cameraPosOnWorldBottomRight.X, (int)cameraPosOnWorldBottomRight.Y);
+
+            //Log.Write(tileOnTopLeft.ToString() + " " + cameraPosOnWorldTopLeft.ToString());
+
+            DrawTiles(tileOnTopLeft, tileOnPosBottomRight, time, batch);
 
         }
 
@@ -229,11 +280,10 @@ namespace ISO.Core.Tiled
         public Point GetTileOnWorld(int x, int y)
         {
 
-            var column = (int)Math.Floor((y / (float)ImageAtlas.TileHeight) + (x / (float)ImageAtlas.TileWidth));
-            var row = (int)Math.Floor((-x / (float)ImageAtlas.TileWidth) + (y / (float)ImageAtlas.TileHeight));
+            var column = (int)Math.Floor((y / (float)MapMetadata.tileheight) + (x / (float)MapMetadata.tilewidth));
+            var row = (int)Math.Floor((-x / (float)MapMetadata.tilewidth) + (y / (float)MapMetadata.tileheight));
 
             return new Point(row, column);
-
         }
 
     }
