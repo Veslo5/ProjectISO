@@ -30,6 +30,10 @@ namespace ISO.Core.Tiled
         private string Path { get; }
 
 
+        public int RednderingOffsetMultiply { get;set;} = 2;
+        private Vector2 topLeftRenderingOffset { get;set;}
+        private Vector2 bottomRightRenderingOffest { get;set;}
+
         public ISOTiledManager(int ID, string path, OrthographicCamera camera, LoadingManager content)
         {
             this.ID = ID;
@@ -54,6 +58,12 @@ namespace ISO.Core.Tiled
                 Log.Info("Creating map " +  MapMetadata.width + "x" + MapMetadata.height + " with " + MapMetadata.layers.Count + " layers" , LogModule.CR);
                 Log.Info("Map references " + MapMetadata.tilesets.Count + " tilesets" , LogModule.CR);
                 
+                var x = MapMetadata.tilewidth * RednderingOffsetMultiply;
+                var y = MapMetadata.tileheight * RednderingOffsetMultiply;
+
+                // This numbers have to be negative so negate it with * -1
+                topLeftRenderingOffset = new Vector2(x * -1, y * -1);
+                bottomRightRenderingOffest = new Vector2(Camera.viewport.Width + x, Camera.viewport.Height + y);
 
                 foreach (var tileSet in MapMetadata.tilesets)
                 {
@@ -242,16 +252,26 @@ namespace ISO.Core.Tiled
         {
 
             //TODO: We need to remove this 128 and 64 constants
-            var cameraPosOnWorldTopLeft = Camera.ScreenToWorldSpace(new Vector2(-128, -64));
+            var cameraPosOnWorldTopLeft = Camera.ScreenToWorldSpace(topLeftRenderingOffset);
             var tileOnTopLeft = GetTileOnWorld((int)cameraPosOnWorldTopLeft.X, (int)cameraPosOnWorldTopLeft.Y);
 
-            var cameraPosOnWorldBottomRight = Camera.ScreenToWorldSpace(new Vector2(Camera.viewport.Width + 128, Camera.viewport.Height + 64));
+            var cameraPosOnWorldBottomRight = Camera.ScreenToWorldSpace(bottomRightRenderingOffest);
             var tileOnPosBottomRight = GetTileOnWorld((int)cameraPosOnWorldBottomRight.X, (int)cameraPosOnWorldBottomRight.Y);
 
             //Log.Write(tileOnTopLeft.ToString() + " " + cameraPosOnWorldTopLeft.ToString());
 
             DrawTiles(tileOnTopLeft, tileOnPosBottomRight, time, batch);
 
+        }
+
+        public void OnResolutionChanged(Viewport viewport)
+        {
+            var x = MapMetadata.tilewidth * RednderingOffsetMultiply;
+            var y = MapMetadata.tileheight * RednderingOffsetMultiply;
+
+            // This numbers have to be negative so negate it with * -1
+            topLeftRenderingOffset = new Vector2(x * -1, y * -1);
+            bottomRightRenderingOffest = new Vector2(viewport.Width + x, viewport.Height + y);
         }
 
         public TileSprite GetTileOnPosition(int row, int column, int layer = 0)
@@ -273,8 +293,8 @@ namespace ISO.Core.Tiled
         public TileSprite GetTileOnWorldPosition(int x, int y)
         {
 
-            var column = (int)Math.Floor((y / 32f) + (x / 64f));
-            var row = (int)Math.Floor((-x / 64f) + (y / 32f));
+            var column = (int)Math.Floor((y / (float)MapMetadata.tileheight) + (x / (float)MapMetadata.tilewidth));
+            var row = (int)Math.Floor((-x / (float)MapMetadata.tilewidth) + (y / (float)MapMetadata.tileheight));
 
             return GetTileOnPosition(row, column, 0);
 

@@ -147,6 +147,7 @@ namespace ISO.Core.Scenes.SceneTypes
             Log.Info("Resolution changed on scene " + Name, LogModule.CR);
             Camera.OnResolutionChange(Game.GraphicsDevice.Viewport);
             UICamera.OnResolutionChange(Game.GraphicsDevice.Viewport);
+            Map.OnResolutionChanged(Game.GraphicsDevice.Viewport);
 
         }
 
@@ -159,6 +160,8 @@ namespace ISO.Core.Scenes.SceneTypes
         {
             Camera.OnResolutionChange(Game.GraphicsDevice.Viewport);
             UICamera.OnResolutionChange(Game.GraphicsDevice.Viewport);
+            Map.OnResolutionChanged(Game.GraphicsDevice.Viewport);
+
         }
 
 
