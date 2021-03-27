@@ -30,9 +30,9 @@ namespace ISO.Core.Tiled
         private string Path { get; }
 
 
-        public int RednderingOffsetMultiply { get;set;} = 2;
-        private Vector2 topLeftRenderingOffset { get;set;}
-        private Vector2 bottomRightRenderingOffest { get;set;}
+        public int RednderingOffsetMultiply { get; set; } = 2;
+        private Vector2 topLeftRenderingOffset { get; set; }
+        private Vector2 bottomRightRenderingOffest { get; set; }
 
         public ISOTiledManager(int ID, string path, OrthographicCamera camera, LoadingManager content)
         {
@@ -55,9 +55,9 @@ namespace ISO.Core.Tiled
                 var filemapJson = context.LoadMapDataByType(ID, MapDataTypes.MAP);
                 MapMetadata = JsonConvert.DeserializeObject<ISOTiledMap>(filemapJson.DATA); // tileset metadata are now in map metadata (use options in tiled!)                                
 
-                Log.Info("Creating map " +  MapMetadata.width + "x" + MapMetadata.height + " with " + MapMetadata.layers.Count + " layers" , LogModule.CR);
-                Log.Info("Map references " + MapMetadata.tilesets.Count + " tilesets" , LogModule.CR);
-                
+                Log.Info("Creating map " + MapMetadata.width + "x" + MapMetadata.height + " with " + MapMetadata.layers.Count + " layers", LogModule.CR);
+                Log.Info("Map references " + MapMetadata.tilesets.Count + " tilesets", LogModule.CR);
+
                 var x = MapMetadata.tilewidth * RednderingOffsetMultiply;
                 var y = MapMetadata.tileheight * RednderingOffsetMultiply;
 
@@ -76,7 +76,7 @@ namespace ISO.Core.Tiled
 
                     // And yeah in loading callback you can still add another resources to loading queue
                     // Just for case if you read some metadata and need to load something based on reference from it
-                    content.Load<TextureAsset>(tileSet.name + "_TILESET", "MAP" + "/TILESET/" + tileSet.name);
+                    content.Load<TextureAsset>(tileSet.name + "_TILESET", System.IO.Path.Combine("MAP", "TILESET", tileSet.name));
                 }
             }
         }
@@ -88,7 +88,7 @@ namespace ISO.Core.Tiled
                 tileset.ImageAtlas = new Atlas(content.GetTexture(tileset.name + "_TILESET").Texture, tileset.columns, tileset.imageheight / tileset.tileheight);
             }
 
-            CreateMap();                                    
+            CreateMap();
         }
 
 
@@ -211,12 +211,12 @@ namespace ISO.Core.Tiled
                     var point = TileSiteAt(row, column);
 
                     for (int layer = 0; layer < AtlasSprites.Count; layer++) // for each layer :)
-                    {                       
+                    {
                         var tile = GetTileOnPosition(point.X, point.Y, layer);
                         if (tile != null)
                         {
                             tile.Draw(gameTime, batch);
-                        }                       
+                        }
                     }
 
                 }
@@ -266,12 +266,15 @@ namespace ISO.Core.Tiled
 
         public void OnResolutionChanged(Viewport viewport)
         {
-            var x = MapMetadata.tilewidth * RednderingOffsetMultiply;
-            var y = MapMetadata.tileheight * RednderingOffsetMultiply;
+            if (MapMetadata != null)
+            {
+                var x = MapMetadata.tilewidth * RednderingOffsetMultiply;
+                var y = MapMetadata.tileheight * RednderingOffsetMultiply;
 
-            // This numbers have to be negative so negate it with * -1
-            topLeftRenderingOffset = new Vector2(x * -1, y * -1);
-            bottomRightRenderingOffest = new Vector2(viewport.Width + x, viewport.Height + y);
+                // This numbers have to be negative so negate it with * -1
+                topLeftRenderingOffset = new Vector2(x * -1, y * -1);
+                bottomRightRenderingOffest = new Vector2(viewport.Width + x, viewport.Height + y);
+            }
         }
 
         public TileSprite GetTileOnPosition(int row, int column, int layer = 0)

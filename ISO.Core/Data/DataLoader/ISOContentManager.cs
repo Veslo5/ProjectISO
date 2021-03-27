@@ -21,7 +21,8 @@ namespace ISO.Core.Data.DataLoader
         {
             MemoryStream stream = null;
 
-            var xnbName = RootDirectory + "/" + assetName + ".xnb";
+            // Replace because of this: https://docs.microsoft.com/en-us/dotnet/framework/migration-guide/mitigation-ziparchiveentry-fullname-path-separator
+            var xnbName = Path.Combine(RootDirectory, assetName + ".xnb").Replace('\\', '/');
 
             using (ZipArchive zip = ZipFile.Open(RootDirectory + ".zip", ZipArchiveMode.Read))
             {

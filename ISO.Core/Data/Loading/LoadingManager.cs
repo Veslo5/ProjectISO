@@ -468,7 +468,7 @@ namespace ISO.Core.Loading
             }
             catch (Exception ex)
             {
-                Log.Error("Could not load texture resource for Asset " + textureAsset.Key, LogModule.LO);
+                Log.Error("Could not load texture resource for Asset " + textureAsset.Key + " at path " + textureAsset.Value.Path, LogModule.LO);
                 Log.Error(ex.GetAllInnerExceptions(), LogModule.LO);
 
                 AssetsLoaded--; // rollback
@@ -493,7 +493,7 @@ namespace ISO.Core.Loading
             }
             catch (Exception ex)
             {
-                Log.Error("Could not load sound resource for Asset " + soundAsset.Key, LogModule.LO);
+                Log.Error("Could not load sound resource for Asset " + soundAsset.Key + " at path " + soundAsset.Value.Path, LogModule.LO);
                 Log.Error(ex.GetAllInnerExceptions(), LogModule.LO);
 
                 AssetsLoaded--; // rollback
@@ -518,7 +518,7 @@ namespace ISO.Core.Loading
             }
             catch (Exception ex)
             {
-                Log.Error("Could not load font resource for Asset " + fontAsset.Key, LogModule.LO);
+                Log.Error("Could not load font resource for Asset " + fontAsset.Key + " at path " + fontAsset.Value.Path, LogModule.LO);
                 Log.Error(ex.GetAllInnerExceptions(), LogModule.LO);
 
                 AssetsLoaded--; // rollback
