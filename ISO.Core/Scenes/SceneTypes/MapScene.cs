@@ -107,7 +107,7 @@ namespace ISO.Core.Scenes.SceneTypes
 
         public virtual void Draw(GameTime gameTime)
         {
-            SpriteBatch.Begin(sortMode: SpriteSortMode.Deferred, blendState: BlendState.AlphaBlend, samplerState: SamplerState.PointClamp, transformMatrix: Camera.Projection, rasterizerState: RasterizerState.CullNone);
+            SpriteBatch.Begin(sortMode: SpriteSortMode.FrontToBack, blendState: BlendState.AlphaBlend, samplerState: SamplerState.PointClamp, transformMatrix: Camera.Projection, rasterizerState: RasterizerState.CullNone);
             Map.Draw(gameTime, SpriteBatch);
             SpriteBatch.End();
 

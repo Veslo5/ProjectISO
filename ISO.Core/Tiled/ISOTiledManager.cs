@@ -53,6 +53,7 @@ namespace ISO.Core.Tiled
 
                 Log.Info("Creating map " +  MapMetadata.width + "x" + MapMetadata.height + " with " + MapMetadata.layers.Count + " layers" , LogModule.CR);
                 Log.Info("Map references " + MapMetadata.tilesets.Count + " tilesets" , LogModule.CR);
+                
 
                 foreach (var tileSet in MapMetadata.tilesets)
                 {
@@ -77,15 +78,17 @@ namespace ISO.Core.Tiled
                 tileset.ImageAtlas = new Atlas(content.GetTexture(tileset.name + "_TILESET").Texture, tileset.columns, tileset.imageheight / tileset.tileheight);
             }
 
-            CreateMap();
+            CreateMap();                                    
         }
 
 
         private void CreateMap()
         {
+            int layerCount = -1;
 
             foreach (var layer in MapMetadata.layers)
             {
+                layerCount += 1;
                 var rows = new TileSprite[layer.height][]; // All maps will be 1:1 so...
 
                 for (int r = 0; r < layer.height; r++) // r = row
@@ -123,7 +126,7 @@ namespace ISO.Core.Tiled
                                     var ImageAtlas = tileSet.ImageAtlas;
 
                                     // Create tile sprite with reference to Atlas image (batching purposes)
-                                    var newasprite = new TileSprite(asprite.Texture, asprite.PositionX, asprite.PositionY, ImageAtlas.TileWidth, ImageAtlas.TileHeight, r, c);
+                                    var newasprite = new TileSprite(asprite.Texture, asprite.PositionX, asprite.PositionY, ImageAtlas.TileWidth, ImageAtlas.TileHeight, r, c, layerCount);
 
                                     //X and Y diamond position rendering (rendering right-down)
                                     var x = ((c * MapMetadata.tilewidth) / 2) - ((r * MapMetadata.tilewidth) / 2);
@@ -198,12 +201,12 @@ namespace ISO.Core.Tiled
                     var point = TileSiteAt(row, column);
 
                     for (int layer = 0; layer < AtlasSprites.Count; layer++) // for each layer :)
-                    {
+                    {                       
                         var tile = GetTileOnPosition(point.X, point.Y, layer);
                         if (tile != null)
                         {
                             tile.Draw(gameTime, batch);
-                        }
+                        }                       
                     }
 
                 }
