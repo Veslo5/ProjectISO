@@ -27,6 +27,10 @@
 |  ISOContentProvider | Extending ContentManager | Provider | Internal functions |
 |  ISOGraphicProvider | Extending GraphicsDeviceManager | Provider | Internal functions |
 
+Managers - Could be used from LUA scripting (unique for each level)
+Controllers - On game top level (can be accessed from anywhere)
+Providers - Internal components which extending monogame functions (should not be touched from scripts) 
+
 ## File formats
 
 | Value  | Example |
