@@ -1,6 +1,7 @@
 ﻿using ISO.Core.Corountines;
 using ISO.Core.Engine.Camera;
 using ISO.Core.Engine.Logging;
+using ISO.Core.Graphics.Particles;
 using ISO.Core.Loading;
 using ISO.Core.Scripting;
 using ISO.Core.Tiled;
@@ -25,6 +26,11 @@ namespace ISO.Core.Scenes.SceneTypes
         /// Map manager
         /// </summary>
         public ISOTiledManager Map { get; set; }
+        
+        /// <summary>
+        /// 
+        /// </summary>
+        public ParticleManager Particles { get; set; }
 
         #endregion
 
@@ -52,9 +58,9 @@ namespace ISO.Core.Scenes.SceneTypes
             Map = new ISOTiledManager(ID, Game.Config.DataPath, Camera, LoadingManager);
             UI = new UIManager(ID, Game.Config.DataPath, LoadingManager, Game.GraphicsDevice);
             Corountines = new CorountineManager();
+            Particles = new ParticleManager(Game.GraphicsDevice, Corountines);
 
             LuaProvider.InvokeInit(Name);
-
         }
 
         public virtual void LoadContent()
@@ -64,13 +70,14 @@ namespace ISO.Core.Scenes.SceneTypes
             Map.LoadContent(LoadingManager);
             UI.LoadContent(LoadingManager);
             LuaProvider.InvokeLoad(Name);
-
+            Particles.LoadContent(LoadingManager);
         }
 
         public virtual void AfterLoadContent(LoadingController manager)
         {
             Map.AfterLoad(manager);
             UI.AfterLoad(manager);
+            Particles.AfterLoad(manager);
         }
 
         /// <summary>
@@ -93,6 +100,7 @@ namespace ISO.Core.Scenes.SceneTypes
             UI.Update(gameTime);
 
             LuaProvider.InvokeUpdate(Name);
+            Particles.Update(gameTime);
         }
 
         /// <summary>
@@ -116,7 +124,7 @@ namespace ISO.Core.Scenes.SceneTypes
             SpriteBatch.End();
 
             LuaProvider.InvokeDraw(Name);
-
+            Particles.Draw(gameTime, SpriteBatch);
         }
 
         public virtual void UnloadContent()
