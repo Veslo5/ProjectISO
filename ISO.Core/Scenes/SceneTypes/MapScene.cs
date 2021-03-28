@@ -60,7 +60,7 @@ namespace ISO.Core.Scenes.SceneTypes
         public virtual void LoadContent()
         {
             Log.Info("Loading content from scene " + Name, LogModule.LO);
-
+            //
             Map.LoadContent(LoadingManager);
             UI.LoadContent(LoadingManager);
             LuaProvider.InvokeLoad(Name);
