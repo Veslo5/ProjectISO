@@ -11,6 +11,11 @@
     <PackageReference Include="sqlite-net-pcl" Version="1.7.335" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="!\" />
+    <Folder Include="!\DLL\" />
+  </ItemGroup>
+  <ItemGroup>
+    <Reference Include="ProjectISO-Pixi-Particles">
+      <HintPath>!\DLL\ProjectISO-Pixi-Particles.dll</HintPath>
+    </Reference>
   </ItemGroup>
 </Project>
