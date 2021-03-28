@@ -1,5 +1,6 @@
 ﻿using ISO.Core.Data.DataLoader.SqliteClient;
 using ISO.Core.Data.DataLoader.SqliteClient.Contracts;
+using ISO.Core.Engine;
 using ISO.Core.Engine.Camera;
 using ISO.Core.Engine.Logging;
 using ISO.Core.Graphics.Sprites.Atlas;
@@ -18,9 +19,9 @@ using System.Linq;
 
 namespace ISO.Core.Tiled
 {
-    public class ISOTiledManager
+    public class ISOTiledManager : Manager
     {
-        private LoadingManager content { get; }
+        private LoadingController content { get; }
         private ISOTiledMap MapMetadata { get; set; }
 
         private List<TileSprite[][]> AtlasSprites { get; set; } = new List<TileSprite[][]>(); // [row][column]
@@ -34,7 +35,7 @@ namespace ISO.Core.Tiled
         private Vector2 topLeftRenderingOffset { get; set; }
         private Vector2 bottomRightRenderingOffest { get; set; }
 
-        public ISOTiledManager(int ID, string path, OrthographicCamera camera, LoadingManager content)
+        public ISOTiledManager(int ID, string path, OrthographicCamera camera, LoadingController content)
         {
             this.ID = ID;
             Path = path;
@@ -43,10 +44,78 @@ namespace ISO.Core.Tiled
 
         }
 
-        public void LoadContent()
+        #region Overrides
+
+        internal override void LoadContent(LoadingController manager)
         {
             content.LoadCallback("MAP_DATA", LoadMapData);
         }
+
+        internal override void AfterLoad(LoadingController manager)
+        {
+            foreach (var tileset in MapMetadata.tilesets)
+            {
+                tileset.ImageAtlas = new Atlas(content.GetTexture(tileset.name + "_TILESET").Texture, tileset.columns, tileset.imageheight / tileset.tileheight);
+            }
+
+            CreateMap();
+        }
+
+        internal override void Update(GameTime gameTime)
+        {
+            //TODO: refactor this with Game.Input reference
+            var state = Mouse.GetState();
+            var ks = Keyboard.GetState();
+
+            //Log.Write(Camera.Position)
+
+
+            if (state.LeftButton == ButtonState.Pressed)
+            {
+                var position = Camera.ScreenToWorldSpace(state.Position.ToVector2());
+                var vec = GetTileOnWorld((int)position.X, (int)position.Y);
+                var tile = GetTileOnWorldPosition((int)position.X, (int)position.Y);
+                Log.Write(vec.ToString() + " " + position.ToString());
+                if (tile != null)
+                {
+                    tile.Color = Color.Red;
+                }
+            }
+
+
+
+        }
+
+        internal override void Draw(GameTime time, SpriteBatch batch)
+        {
+
+            //TODO: We need to remove this 128 and 64 constants
+            var cameraPosOnWorldTopLeft = Camera.ScreenToWorldSpace(topLeftRenderingOffset);
+            var tileOnTopLeft = GetTileOnWorld((int)cameraPosOnWorldTopLeft.X, (int)cameraPosOnWorldTopLeft.Y);
+
+            var cameraPosOnWorldBottomRight = Camera.ScreenToWorldSpace(bottomRightRenderingOffest);
+            var tileOnPosBottomRight = GetTileOnWorld((int)cameraPosOnWorldBottomRight.X, (int)cameraPosOnWorldBottomRight.Y);
+
+            //Log.Write(tileOnTopLeft.ToString() + " " + cameraPosOnWorldTopLeft.ToString());
+
+            DrawTiles(tileOnTopLeft, tileOnPosBottomRight, time, batch);
+
+        }
+
+        internal override void OnResolutionChanged(Viewport viewport)
+        {
+            if (MapMetadata != null)
+            {
+                var x = MapMetadata.tilewidth * RednderingOffsetMultiply;
+                var y = MapMetadata.tileheight * RednderingOffsetMultiply;
+
+                // This numbers have to be negative so negate it with * -1
+                topLeftRenderingOffset = new Vector2(x * -1, y * -1);
+                bottomRightRenderingOffest = new Vector2(viewport.Width + x, viewport.Height + y);
+            }
+        }
+        
+        #endregion
 
         public void LoadMapData()
         {
@@ -80,17 +149,6 @@ namespace ISO.Core.Tiled
                 }
             }
         }
-
-        public void AfterLoad(LoadingManager manager)
-        {
-            foreach (var tileset in MapMetadata.tilesets)
-            {
-                tileset.ImageAtlas = new Atlas(content.GetTexture(tileset.name + "_TILESET").Texture, tileset.columns, tileset.imageheight / tileset.tileheight);
-            }
-
-            CreateMap();
-        }
-
 
         private void CreateMap()
         {
@@ -223,59 +281,6 @@ namespace ISO.Core.Tiled
             }
         }
 
-        public void Update()
-        {
-            //TODO: refactor this with Game.Input reference
-            var state = Mouse.GetState();
-            var ks = Keyboard.GetState();
-
-            //Log.Write(Camera.Position)
-
-
-            if (state.LeftButton == ButtonState.Pressed)
-            {
-                var position = Camera.ScreenToWorldSpace(state.Position.ToVector2());
-                var vec = GetTileOnWorld((int)position.X, (int)position.Y);
-                var tile = GetTileOnWorldPosition((int)position.X, (int)position.Y);
-                Log.Write(vec.ToString() + " " + position.ToString());
-                if (tile != null)
-                {
-                    tile.Color = Color.Red;
-                }
-            }
-
-
-
-        }
-
-        public void Draw(GameTime time, SpriteBatch batch)
-        {
-
-            //TODO: We need to remove this 128 and 64 constants
-            var cameraPosOnWorldTopLeft = Camera.ScreenToWorldSpace(topLeftRenderingOffset);
-            var tileOnTopLeft = GetTileOnWorld((int)cameraPosOnWorldTopLeft.X, (int)cameraPosOnWorldTopLeft.Y);
-
-            var cameraPosOnWorldBottomRight = Camera.ScreenToWorldSpace(bottomRightRenderingOffest);
-            var tileOnPosBottomRight = GetTileOnWorld((int)cameraPosOnWorldBottomRight.X, (int)cameraPosOnWorldBottomRight.Y);
-
-            //Log.Write(tileOnTopLeft.ToString() + " " + cameraPosOnWorldTopLeft.ToString());
-
-            DrawTiles(tileOnTopLeft, tileOnPosBottomRight, time, batch);
-
-        }
-
-        public void OnResolutionChanged(Viewport viewport)
-        {
-            if (MapMetadata != null)
-            {
-                var x = MapMetadata.tilewidth * RednderingOffsetMultiply;
-                var y = MapMetadata.tileheight * RednderingOffsetMultiply;
-
-                // This numbers have to be negative so negate it with * -1
-                topLeftRenderingOffset = new Vector2(x * -1, y * -1);
-                bottomRightRenderingOffest = new Vector2(viewport.Width + x, viewport.Height + y);
-            }
-        }
 
         public TileSprite GetTileOnPosition(int row, int column, int layer = 0)
         {

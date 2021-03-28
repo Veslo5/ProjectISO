@@ -31,7 +31,7 @@ namespace ProjectISO.Levels
 
         }
 
-        public override void AfterLoadContent(LoadingManager manager)
+        public override void AfterLoadContent(LoadingController manager)
         {
             base.AfterLoadContent(manager);
         }

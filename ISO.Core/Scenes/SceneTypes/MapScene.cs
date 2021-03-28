@@ -48,7 +48,7 @@ namespace ISO.Core.Scenes.SceneTypes
             LuaProvider = new LuaManager(Game.Config.DataPath, ID, false);
             LuaProvider.AddScript(Name);
 
-            LoadingManager = new LoadingManager(Game.Content);
+            LoadingManager = new LoadingController(Game.Content);
             Map = new ISOTiledManager(ID, Game.Config.DataPath, Camera, LoadingManager);
             UI = new UIManager(ID, Game.Config.DataPath, LoadingManager, Game.GraphicsDevice);
             Corountines = new CorountineManager();
@@ -61,13 +61,13 @@ namespace ISO.Core.Scenes.SceneTypes
         {
             Log.Info("Loading content from scene " + Name, LogModule.LO);
 
-            Map.LoadContent();
-            UI.LoadContent(Game);
+            Map.LoadContent(LoadingManager);
+            UI.LoadContent(LoadingManager);
             LuaProvider.InvokeLoad(Name);
 
         }
 
-        public virtual void AfterLoadContent(LoadingManager manager)
+        public virtual void AfterLoadContent(LoadingController manager)
         {
             Map.AfterLoad(manager);
             UI.AfterLoad(manager);
@@ -87,7 +87,7 @@ namespace ISO.Core.Scenes.SceneTypes
             Camera.Update(); //TODO: Optimize and cache vector (change only when device change resolution)            
             UICamera.Update(); //TODO: Optimize and cache vector (change only when device change resolution)
 
-            Map.Update();
+            Map.Update(gameTime);
 
             Corountines.Update(gameTime);
             UI.Update(gameTime);

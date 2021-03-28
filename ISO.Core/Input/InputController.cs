@@ -7,7 +7,7 @@ using System.Text;
 
 namespace ISO.Core.Input
 {
-    public class InputManager
+    public class InputController
     {
         public Point MousePosition { get; set; }
 
@@ -19,7 +19,7 @@ namespace ISO.Core.Input
         private MouseState currentMouseState { get;set;}
         private MouseState lastMouseState { get;set;}
 
-        public InputManager()
+        public InputController()
         {
             VirtualButtonConfig = new VirtualButtonConfig();
         }

@@ -7,7 +7,7 @@ namespace ISO.Core.Scenes
     /// <summary>
     /// Manager for scenes
     /// </summary>
-    public class SceneManager
+    public class SceneController
     {
         /// <summary>
         /// Current scene
@@ -25,7 +25,7 @@ namespace ISO.Core.Scenes
         private ISOGame _game;
 
 
-        public SceneManager(ISOGame game)
+        public SceneController(ISOGame game)
         {
             _game = game;
         }

@@ -62,7 +62,7 @@ namespace ProjectISO
             }
         }
         
-        private static void prepareVirtualBindings(InputManager manager)
+        private static void prepareVirtualBindings(InputController manager)
         {
             manager.VirtualButtonConfig.AddBindingToAction("Left", new ButtonBinding(Keys.A));
             manager.VirtualButtonConfig.AddBindingToAction("Left", new ButtonBinding(Keys.Left));

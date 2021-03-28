@@ -11,7 +11,7 @@ namespace ISO.Core.UI
 
         void Draw(GameTime gameTime, SpriteBatch spriteBatch);
         void Update(GameTime gameTime);
-        void LoadContent(LoadingManager manager);
-        void AfterLoad(LoadingManager manager);
+        void LoadContent(LoadingController manager);
+        void AfterLoad(LoadingController manager);
     }
 }

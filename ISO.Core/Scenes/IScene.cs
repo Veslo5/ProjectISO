@@ -15,7 +15,7 @@ namespace ISO.Core.Scenes
         void Draw(GameTime gameTime);
         void UnloadContent();
         void LoadContent();
-        void AfterLoadContent(LoadingManager manager);
+        void AfterLoadContent(LoadingController manager);
         void GraphicsDevice_DeviceReset();
         void Window_ClientSizeChanged();
     }

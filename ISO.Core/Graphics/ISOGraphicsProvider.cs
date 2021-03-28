@@ -7,7 +7,7 @@ namespace ISO.Core.Graphics
     /// <summary>
     /// ISO Graphics manager 
     /// </summary>
-    public class ISOGraphicsManager : GraphicsDeviceManager
+    public class ISOGraphicsProvider : GraphicsDeviceManager
     {
 
         /// <summary>
@@ -24,7 +24,7 @@ namespace ISO.Core.Graphics
 
         public int FrameCap { get; }
 
-        public ISOGraphicsManager(Game game, int width, int height, bool vsync, int frameCap) : base(game)
+        public ISOGraphicsProvider(Game game, int width, int height, bool vsync, int frameCap) : base(game)
         {
             CurrentWidth = width;
             CurrentHeight = height;

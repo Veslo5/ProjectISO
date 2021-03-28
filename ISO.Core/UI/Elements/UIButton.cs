@@ -32,7 +32,7 @@ namespace ISO.Core.UI.Elements
             this.text.Parent = this;
         }
 
-        public void LoadContent(LoadingManager manager)
+        public void LoadContent(LoadingController manager)
         {
             DimensionsRectangle = new Rectangle(Position.X, Position.Y, Size.X, Size.Y);
 
@@ -43,7 +43,7 @@ namespace ISO.Core.UI.Elements
 
 
         }
-        public void AfterLoad(LoadingManager manager)
+        public void AfterLoad(LoadingController manager)
         {
             if (string.IsNullOrEmpty(ResourcePath))
             {

@@ -36,7 +36,7 @@ namespace ISO.Core.Scenes.SceneTypes
             LuaProvider = new LuaManager(Game.Config.DataPath, ID, false);
             LuaProvider.AddScript(Name);
 
-            LoadingManager = new LoadingManager(Game.Content);
+            LoadingManager = new LoadingController(Game.Content);
             UI = new UIManager(ID, Game.Config.DataPath, LoadingManager, Game.GraphicsDevice);
             Corountines = new CorountineManager();
 
@@ -46,10 +46,10 @@ namespace ISO.Core.Scenes.SceneTypes
         {
             Log.Info("Loading content from scene " + Name, LogModule.LO);
 
-            UI.LoadContent(Game);
+            UI.LoadContent(LoadingManager);
             LuaProvider.InvokeLoad(Name);
         }
-        public virtual void AfterLoadContent(LoadingManager manager)
+        public virtual void AfterLoadContent(LoadingController manager)
         {
             UI.AfterLoad(manager);
         }

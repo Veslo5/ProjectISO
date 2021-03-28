@@ -5,9 +5,9 @@ using System.IO.Compression;
 
 namespace ISO.Core.Data.DataLoader
 {
-    public class ISOContentManager : ContentManager
+    public class ISOContentProvider : ContentManager
     {
-        public ISOContentManager(IServiceProvider provider) : base(provider)
+        public ISOContentProvider(IServiceProvider provider) : base(provider)
         {
 
         }

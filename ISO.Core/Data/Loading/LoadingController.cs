@@ -12,10 +12,10 @@ using System.Threading.Tasks;
 
 namespace ISO.Core.Loading
 {
-    public class LoadingManager
+    public class LoadingController
     {
 
-        public LoadingManager(ISOContentManager manager)
+        public LoadingController(ISOContentProvider manager)
         {
             this.manager = manager;
 
@@ -28,7 +28,7 @@ namespace ISO.Core.Loading
             AssetsLoaded = 0;
         }
 
-        private ISOContentManager manager { get; set; }
+        private ISOContentProvider manager { get; set; }
 
         /// <summary>
         /// Container with textures
@@ -53,7 +53,7 @@ namespace ISO.Core.Loading
         /// <summary>
         /// Callback when data is loaded
         /// </summary>
-        public Action<LoadingManager> AfterLoadCallback { get; set; }
+        public Action<LoadingController> AfterLoadCallback { get; set; }
 
         /// <summary>
         /// Flag when game is asynchronously loading data

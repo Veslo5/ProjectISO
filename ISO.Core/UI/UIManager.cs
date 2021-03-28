@@ -1,4 +1,5 @@
-﻿using ISO.Core.Engine.Logging;
+﻿using ISO.Core.Engine;
+using ISO.Core.Engine.Logging;
 using ISO.Core.Loading;
 using ISO.Core.Scenes;
 using ISO.Core.UI.Elements;
@@ -11,17 +12,17 @@ using System.Linq;
 
 namespace ISO.Core.UI
 {
-    public class UIManager
+    public class UIManager : Manager
     {
         private List<IUI> UIHolder { get; set; }
 
         public UILoader UILoader { get; set; }
-        public LoadingManager Loader { get; set; }
+        public LoadingController Loader { get; set; }
         public GraphicsDevice Device { get; }
         public int MapID { get; }
         private UIHelper uIHelper { get; set; }
 
-        public UIManager(int ID, string dbPath, LoadingManager loader, GraphicsDevice device)
+        public UIManager(int ID, string dbPath, LoadingController loader, GraphicsDevice device)
         {
             Log.Info("Creating UI manager", LogModule.CR);
             MapID = ID;
@@ -60,7 +61,9 @@ namespace ISO.Core.UI
             UIHolder.Remove(element);
         }
 
-        internal void Update(GameTime gameTime)
+        #region Overrides
+
+        internal override void Update(GameTime gameTime)
         {
             foreach (var element in UIHolder)
             {
@@ -68,7 +71,7 @@ namespace ISO.Core.UI
             }
         }
 
-        internal void Draw(GameTime gameTime, SpriteBatch spriteBatch)
+        internal override void Draw(GameTime gameTime, SpriteBatch spriteBatch)
         {
             foreach (var element in UIHolder)
             {
@@ -76,12 +79,12 @@ namespace ISO.Core.UI
             }
         }
 
-        internal void LoadContent(ISOGame game)
+        internal override void LoadContent(LoadingController manager)
         {
             UILoader.LoadUIContent();
         }
 
-        internal void AfterLoad(LoadingManager manager)
+        internal override void AfterLoad(LoadingController manager)
         {
             UILoader.AfterLoad();
             foreach (var element in UIHolder)
@@ -94,5 +97,6 @@ namespace ISO.Core.UI
             uIHelper = new UIHelper(UIHolder);
         }
 
+        #endregion
     }
 }

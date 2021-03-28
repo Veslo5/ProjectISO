@@ -53,7 +53,7 @@ namespace ISO.Core.Scenes
         /// <summary>
         /// Loading manager
         /// </summary>
-        public LoadingManager LoadingManager { get; set; }
+        public LoadingController LoadingManager { get; set; }
 
         /// <summary>
         /// Spritebatch for rendering

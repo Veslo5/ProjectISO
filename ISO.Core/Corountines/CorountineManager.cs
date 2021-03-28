@@ -1,5 +1,8 @@
-﻿using ISO.Core.Engine.Logging;
+﻿using ISO.Core.Engine;
+using ISO.Core.Engine.Logging;
+using ISO.Core.Loading;
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 using System.Collections;
 using System.Collections.Generic;
 
@@ -9,7 +12,7 @@ namespace ISO.Core.Corountines
     /// <summary>
     /// Do something very xxxx seconds (in ms)
     /// </summary>
-    public class CorountineManager
+    public class CorountineManager : Manager
     {
         private List<Coroutine> coroutines = new List<Coroutine>();
 
@@ -34,11 +37,10 @@ namespace ISO.Core.Corountines
 
             coroutines.RemoveAll(c => c.IsFinished);
         }
-
-        public void Update(GameTime gameTime)
+        
+        internal override void Update(GameTime gameTime)
         {
             UpdateCoroutines(gameTime);
-
         }
     }
 }

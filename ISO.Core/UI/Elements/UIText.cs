@@ -66,12 +66,12 @@ namespace ISO.Core.UI.Elements
         {
         }
 
-        public void LoadContent(LoadingManager manager)
+        public void LoadContent(LoadingController manager)
         {           
             manager.Load<FontAsset>(fontName, fontName);
         }
 
-        public void AfterLoad(LoadingManager manager)
+        public void AfterLoad(LoadingController manager)
         {
             this.font = manager.GetFont(this.fontName).Font;
             this.SetText(Text);

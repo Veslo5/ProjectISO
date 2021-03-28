@@ -16,22 +16,22 @@ namespace ISO.Core.Scenes
         /// <summary>
         /// Graphic Management
         /// </summary>
-        public ISOGraphicsManager Graphics { get; set; }
+        public ISOGraphicsProvider Graphics { get; set; }
 
         /// <summary>
         /// Scene management
         /// </summary>
-        public SceneManager SceneManager { get; set; }
+        public SceneController SceneManager { get; set; }
 
         /// <summary>
         /// Content
         /// </summary>
-        public new ISOContentManager Content { get; set; }
+        public new ISOContentProvider Content { get; set; }
 
         /// <summary>
         /// Input manager
         /// </summary>
-        public InputManager Input { get; set; }
+        public InputController Input { get; set; }
 
         /// <summary>
         /// App configuration
@@ -41,11 +41,11 @@ namespace ISO.Core.Scenes
         public ISOGame(Config config)
         {
             Config = config;
-            SceneManager = new SceneManager(this);
-            Graphics = new ISOGraphicsManager(this, config.Width, config.Height, config.Vsync, config.FrameCap);
-            Input = new InputManager();
+            SceneManager = new SceneController(this);
+            Graphics = new ISOGraphicsProvider(this, config.Width, config.Height, config.Vsync, config.FrameCap);
+            Input = new InputController();
 
-            Content = new ISOContentManager(base.Content.ServiceProvider);
+            Content = new ISOContentProvider(base.Content.ServiceProvider);
             Content.RootDirectory = "Content";
 
             IsMouseVisible = true;
