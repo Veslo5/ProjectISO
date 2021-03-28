@@ -14,6 +14,20 @@
 - *.METAPIC - json with tileset informations used in metamap
 - *.SCRIPT - lua script for game logic
 
+## Core providers, managers, controllers
+| Name  | Info | Type | Access level |
+| ------------- | ------------- | ------------- | ------------- |
+|  LoadingManager | Providing management to loading fuctions | Manager | Logic |
+|  CorountineManager | Providing management to corountine fuctions | Manager | Logic |
+|  LuaManager | Providing management for lua script fuctions | Manager | Logic |
+|  ISOTiledManager | Providing management for tiled maps| Manager | Logic |
+|  UIManager | Providing management for UI | Manager | Logic |
+|  InputController | Providing game input | Controller | Logic |
+|  SceneController | Providing scenes control | Controller | Logic |
+|  LoadingController | Providing loading functions | Controller | Logic |
+|  ISOContentProvider | Extending ContentManager | Provider | Internal functions |
+|  ISOGraphicProvider | Extending GraphicsDeviceManager | Provider | Internal functions |
+
 ## File formats
 
 | Value  | Example |
