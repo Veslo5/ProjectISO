@@ -17,7 +17,6 @@
 ## Core providers, managers, controllers
 | Name  | Info | Type | Access level |
 | ------------- | ------------- | ------------- | ------------- |
-|  LoadingManager | Providing management to loading fuctions | Manager | Logic |
 |  CorountineManager | Providing management to corountine fuctions | Manager | Logic |
 |  LuaManager | Providing management for lua script fuctions | Manager | Logic |
 |  ISOTiledManager | Providing management for tiled maps| Manager | Logic |
