@@ -55,9 +55,9 @@
 - Newtonsoft.Json [https://github.com/JamesNK/Newtonsoft.Json]
 - Monogame 3.8 [https://www.monogame.net/]
 - moonsharp [https://github.com/moonsharp-devs/moonsharp]
+- Pixi [https://github.com/Veslo5/ProjectISO-Pixi-Particles]
 
 #### CLM
 - commandlineparser [https://github.com/commandlineparser/commandline
 
-#### Future :)
-- Pixi [https://github.com/playerthree-ltd/MonoGame-Pixi-Particles]
+
