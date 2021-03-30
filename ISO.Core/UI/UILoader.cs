@@ -2,6 +2,7 @@
 using ISO.Core.Data.DataLoader.SqliteClient.Contracts;
 using ISO.Core.Engine.Helpers.Extensions.ErrorHandling;
 using ISO.Core.Engine.Logging;
+using ISO.Core.Loading;
 using ISO.Core.UI.Elements;
 using ISO.Core.UI.Elements.Base;
 using ISO.Core.UI.JSONModels;
@@ -40,7 +41,7 @@ namespace ISO.Core.UI
         /// Loads UI json and create UI elements from it
         /// </summary>
         /// <param name="name"></param>
-        public void LoadJson()
+        public void LoadJson(LoadingController loadingController)
         {
             Log.Info("Loading UI file with ID: " + Manager.MapID, LogModule.LO); // LO because it is callback from loading
             using (var context = new ISODbContext(Dbpath))

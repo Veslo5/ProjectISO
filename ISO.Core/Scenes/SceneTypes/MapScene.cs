@@ -58,7 +58,7 @@ namespace ISO.Core.Scenes.SceneTypes
             Map = new ISOTiledManager(ID, Game.Config.DataPath, Camera, LoadingManager);
             UI = new UIManager(ID, Game.Config.DataPath, LoadingManager, Game.GraphicsDevice);
             Corountines = new CorountineManager();
-            Particles = new ParticleManager(Game.GraphicsDevice, Corountines);
+            Particles = new ParticleManager(Game.Config.DataPath);
 
             LuaProvider.InvokeInit(Name);
         }
@@ -96,11 +96,12 @@ namespace ISO.Core.Scenes.SceneTypes
 
             Map.Update(gameTime);
 
+            Particles.Update(gameTime);
+
             Corountines.Update(gameTime);
             UI.Update(gameTime);
 
             LuaProvider.InvokeUpdate(Name);
-            Particles.Update(gameTime);
         }
 
         /// <summary>
@@ -115,8 +116,13 @@ namespace ISO.Core.Scenes.SceneTypes
 
         public virtual void Draw(GameTime gameTime)
         {
+
             SpriteBatch.Begin(sortMode: SpriteSortMode.FrontToBack, blendState: BlendState.AlphaBlend, samplerState: SamplerState.PointClamp, transformMatrix: Camera.Projection, rasterizerState: RasterizerState.CullNone);
             Map.Draw(gameTime, SpriteBatch);
+            SpriteBatch.End();
+
+            SpriteBatch.Begin(transformMatrix: Camera.Projection);
+            Particles.Draw(gameTime, SpriteBatch);
             SpriteBatch.End();
 
             SpriteBatch.Begin(transformMatrix: UICamera.Projection);
@@ -124,8 +130,8 @@ namespace ISO.Core.Scenes.SceneTypes
             SpriteBatch.End();
 
             LuaProvider.InvokeDraw(Name);
-            Particles.Draw(gameTime, SpriteBatch);
-        }
+            }
+
 
         public virtual void UnloadContent()
         {

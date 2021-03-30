@@ -24,6 +24,7 @@ namespace ISO.Core.Data.DataLoader.SqliteClient
             CreateTable<MAP>();
             CreateTable<ISOUI>();
             CreateTable<SCRIPT>();
+            CreateTable<PARTICLE>();
         }
 
         public List<MAP> LoadAllMapsForLocation(int mapID)
@@ -56,6 +57,10 @@ namespace ISO.Core.Data.DataLoader.SqliteClient
             return Table<T>().FirstOrDefault(x => x.MAP == mapID);
         }
 
+        public PARTICLE LoadParticle(string name)
+        {
+            return Table<PARTICLE>().FirstOrDefault(x => x.NAME == name);
+        }
 
     }
 

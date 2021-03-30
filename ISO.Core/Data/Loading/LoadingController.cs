@@ -22,7 +22,7 @@ namespace ISO.Core.Loading
             this.Textures = new Dictionary<string, TextureAsset>();
             this.Sounds = new Dictionary<string, SoundAsset>();
             this.Fonts = new Dictionary<string, FontAsset>();
-            this.DataCallback = new Dictionary<string, Action>();
+            this.DataCallback = new Dictionary<string, Action<LoadingController>>();
 
             AssetsCount = 0;
             AssetsLoaded = 0;
@@ -48,7 +48,7 @@ namespace ISO.Core.Loading
         /// <summary>
         /// Container with loading callbacks
         /// </summary>
-        private Dictionary<string, Action> DataCallback { get; set; }
+        private Dictionary<string, Action<LoadingController>> DataCallback { get; set; }
 
         /// <summary>
         /// Callback when data is loaded
@@ -142,7 +142,7 @@ namespace ISO.Core.Loading
         /// </summary>
         /// <param name="name"></param>
         /// <param name="callback"></param>
-        public void LoadCallback(string name, Action callback)
+        public void LoadCallback(string name, Action<LoadingController> callback)
         {
             if (LoadingCallBackInvoked == true)
             {
@@ -398,7 +398,7 @@ namespace ISO.Core.Loading
 
             foreach (var callback in DataCallback)
             {
-                callback.Value.Invoke();
+                callback.Value.Invoke(this);
             }
 
             LoadingCallBackInvoked = true;

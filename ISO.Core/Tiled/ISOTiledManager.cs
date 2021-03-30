@@ -117,7 +117,7 @@ namespace ISO.Core.Tiled
         
         #endregion
 
-        public void LoadMapData()
+        public void LoadMapData(LoadingController manager)
         {
             using (var context = new ISODbContext(Path))
             {

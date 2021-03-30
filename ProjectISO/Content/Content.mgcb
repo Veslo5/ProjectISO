@@ -56,7 +56,7 @@
 /processorParam:TextureFormat=Color
 /build:MAP/TILESET/WALL.png
 
-#begin PARTICLES/particle.png
+#begin PARTICLES/PARTICLE.png
 /importer:TextureImporter
 /processor:TextureProcessor
 /processorParam:ColorKeyColor=255,0,255,255
@@ -66,7 +66,7 @@
 /processorParam:ResizeToPowerOfTwo=False
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
-/build:PARTICLES/particle.png
+/build:PARTICLES/PARTICLE.png;PARTICLES/PARTICLE.png
 
 #begin UI/Slice9.png
 /importer:TextureImporter

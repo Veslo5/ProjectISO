@@ -1,4 +1,5 @@
 ﻿using ISO.Core.Engine.Logging;
+using ISO.Core.Graphics.Particles;
 using ISO.Core.Graphics.Sprites.Animation;
 using ISO.Core.Graphics.Sprites.Primitives;
 using ISO.Core.Loading;
@@ -9,6 +10,7 @@ using ISO.Core.UI.Elements.Base;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
+using System.Collections;
 
 namespace ProjectISO.Levels
 {
@@ -29,9 +31,23 @@ namespace ProjectISO.Levels
             LoadingManager.AfterLoadCallback = AfterLoadContent;
         }
 
+        EmitterHolder particle;
+        public IEnumerator Emmit()
+        {
+            while (true)
+            {
+                particle.Emmit();
+                yield return 1000.0;
+            }
+        }
+
         public override void LoadContent()
         {
             base.LoadContent();
+
+            Particles.PreloadParticles("particle");
+            particle = Particles.GetParticleHolder("particle");
+            
 
             LoadingManager.Load<TextureAsset>("Animation", System.IO.Path.Combine("MAP", "OBJECT", "Pylon"));
 
@@ -43,9 +59,12 @@ namespace ProjectISO.Levels
         public override void AfterLoadContent(LoadingController manager)
         {
             sprite = new AnimatedSprite(manager.GetTexture("Animation").Texture, 5, 4, 100f);
-                       
+
             sprite.DestinationRectangle = new Rectangle(50, 800, 64, 96);
             base.AfterLoadContent(manager);
+
+            Particles.SetEmitterPosition("particle", new Point(500, 500));
+            Corountines.StartCoroutine(Emmit());
 
         }
 
@@ -54,7 +73,7 @@ namespace ProjectISO.Levels
             Game.GraphicsDevice.Clear(Color.Black);
 
             if (!LoadingManager.IsLoading)
-            {                
+            {
                 base.Draw(gameTime);
 
                 SpriteBatch.Begin(samplerState: SamplerState.PointClamp, transformMatrix: Camera.Projection);

@@ -1,4 +1,5 @@
 ﻿using ISO.Core.Corountines;
+using ISO.Core.Data.DataLoader.SqliteClient;
 using ISO.Core.Engine;
 using ISO.Core.Engine.Logging;
 using ISO.Core.Loading;
@@ -17,110 +18,86 @@ namespace ISO.Core.Graphics.Particles
 {
     public class ParticleManager : Manager
     {
-        public ParticleManager(GraphicsDevice graphicsDevice, CorountineManager corountineManager)
+        private Dictionary<string, EmitterHolder> emitterContainer { get; set; }
+        private string DbPath { get; }
+
+        // Actually we do not need coroutine manager here... Emitting should be hanled outside manager
+        //public CorountineManager CorountineManager { get; }
+
+        public ParticleManager(string dbPath)
         {
-            GraphicsDevice = graphicsDevice;
-            CorountineManager = corountineManager;
+            emitterContainer = new Dictionary<string, EmitterHolder>();
+            DbPath = dbPath;
         }
 
-
-        public GraphicsDevice GraphicsDevice { get; }
-        public CorountineManager CorountineManager { get; }
-
-
-        Texture2D particleTexture1 { get; set; }
-        Container particleContainer { get; set; }
-        Emitter particleEmitter { get; set; }
-
-
-
-        private IEnumerator Emit()
+        public void PreloadParticles(params string[] names)
         {
-            while (true)
+            foreach (var particleName in names)
             {
-                particleEmitter.Emit = true;
-
-                yield return 1000.0;
+                emitterContainer.Add(particleName.ToUpper(), new EmitterHolder());
             }
         }
 
+        public EmitterHolder GetParticleHolder(string name)
+        {
+            return emitterContainer[name.ToUpper()];
+        }
 
+        public void SetEmitterPosition(string name, Point position)
+        {
+            emitterContainer[name.ToUpper()].Emitter.UpdateOwnerPos(position.X, position.Y);
+        }
 
         #region Overrides
         internal override void Update(GameTime gameTime)
         {
-            particleEmitter.Update(gameTime.ElapsedGameTime.Milliseconds * 0.001f);
-
+            foreach (var particleKey in emitterContainer)
+            {
+                particleKey.Value.Update(gameTime);
+            }
         }
-
 
         internal override void Draw(GameTime gameTime, SpriteBatch spriteBatch)
         {
-            var particles = particleContainer.Children;
-            spriteBatch.Begin();
-
-
-            if (particles.Count > 0)
+            foreach (var particleKey in emitterContainer)
             {
-                Log.Write("part count: " + particles.Count);
+                particleKey.Value.Draw(gameTime, spriteBatch);
             }
-
-            for (int i = 0; i < particles.Count; i++)
-            {
-                var particle = (Sprite)particles[i];
-
-                if (GraphicsDevice.BlendState != particle.Material.blendState)
-                    GraphicsDevice.BlendState = particle.Material.blendState;
-
-                Vector2 origin = new Vector2(particle.TextureRegion.Size.X * particle.Anchor.X - particle.TextureRegion.Trim.X,
-                    particle.TextureRegion.Size.Y * particle.Anchor.Y - particle.TextureRegion.Trim.Y);
-
-                spriteBatch.Draw(
-                    particle.TextureRegion.BaseTexture,
-                    particle.Position,
-                    particle.TextureRegion.Frame,
-                    particle.Tint * (particle.Alpha * particleContainer.Alpha),
-                    particle.Rotation,
-                    origin,
-                    particle.Scale,
-                    SpriteEffects.None,
-                    0
-                );
-            }
-            spriteBatch.End();
         }
-
-
 
         internal override void LoadContent(LoadingController manager)
         {
-            manager.Load<TextureAsset>("Pixie_texture", System.IO.Path.Combine("PARTICLES", "particle"));
+            manager.LoadCallback("PARTICLES", LoadParticles);
         }
 
+        private void LoadParticles(LoadingController manager)
+        {
+            using (var context = new ISODbContext(DbPath))
+            {
+                foreach (var particleKey in emitterContainer)
+                {
+                    var particle = context.LoadParticle(particleKey.Key);
 
+                    if (particle != null)
+                    {
+                        var upperName = particleKey.Key.ToUpper();
+
+                        emitterContainer[upperName].Config = new EmitterConfig(JToken.Parse(particle.DATA));
+                        manager.Load<TextureAsset>(upperName + "_PARTICLE", System.IO.Path.Combine("PARTICLES", upperName));
+                    }
+                }
+            }
+        }
 
         internal override void AfterLoad(LoadingController manager)
         {
-            var texture = manager.GetTexture("Pixie_texture");
-
-            //If is texture null, there is no reason to continue
-            if (texture.Texture == null)
-                return;
-
-            particleTexture1 = texture.Texture;
-
-
-            particleContainer = new Container();
-            string json = File.ReadAllText(@"C:\Users\David.DESKTOP-PCSA74K\Desktop\Game development\ProjectISO\emitter.json");
-            var config = new EmitterConfig(JToken.Parse(json));
-
-            particleEmitter = new Emitter(particleContainer, new TextureRegion2D[] { new TextureRegion2D(particleTexture1) }, config);
-
-            var x = 400;
-            var y = 300;
-
-            particleEmitter.UpdateOwnerPos(x, y);
-            CorountineManager.StartCoroutine(Emit());
+            foreach (var particleKey in emitterContainer)
+            {
+                var particleHolder = particleKey.Value;
+                particleHolder.ParticleContainer = new Container();
+                var texture = manager.GetTexture(particleKey.Key.ToUpper() + "_PARTICLE");
+                particleHolder.Emitter = new Emitter(particleHolder.ParticleContainer, new TextureRegion2D[] { new TextureRegion2D(texture.Texture) }, particleHolder.Config);
+            }
         }
         #endregion
     }
