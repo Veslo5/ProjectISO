@@ -1,10 +1,13 @@
 ﻿using ISO.Core.Engine.Logging;
+using ISO.Core.Graphics.Sprites.Animation;
 using ISO.Core.Graphics.Sprites.Primitives;
 using ISO.Core.Loading;
+using ISO.Core.Loading.Assets;
 using ISO.Core.Scenes;
 using ISO.Core.Scenes.SceneTypes;
 using ISO.Core.UI.Elements.Base;
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 
 namespace ProjectISO.Levels
@@ -17,6 +20,7 @@ namespace ProjectISO.Levels
 
         RectagleSprite testRectangle;
 
+        AnimatedSprite sprite;
 
         public override void Initialize()
         {
@@ -29,6 +33,8 @@ namespace ProjectISO.Levels
         {
             base.LoadContent();
 
+            LoadingManager.Load<TextureAsset>("Animation", System.IO.Path.Combine("MAP", "OBJECT", "Pylon"));
+
             LoadingManager.StartLoadingAsync();
             testRectangle = new RectagleSprite(Color.Red, Game.GraphicsDevice, new Rectangle(0, 0, 100, 100));
 
@@ -36,7 +42,11 @@ namespace ProjectISO.Levels
 
         public override void AfterLoadContent(LoadingController manager)
         {
+            sprite = new AnimatedSprite(manager.GetTexture("Animation").Texture, 5, 4, 100f);
+                       
+            sprite.DestinationRectangle = new Rectangle(50, 800, 64, 96);
             base.AfterLoadContent(manager);
+
         }
 
         public override void Draw(GameTime gameTime)
@@ -44,13 +54,21 @@ namespace ProjectISO.Levels
             Game.GraphicsDevice.Clear(Color.Black);
 
             if (!LoadingManager.IsLoading)
+            {                
                 base.Draw(gameTime);
+
+                SpriteBatch.Begin(samplerState: SamplerState.PointClamp, transformMatrix: Camera.Projection);
+                sprite.Draw(gameTime, SpriteBatch);
+                SpriteBatch.End();
+            }
         }
 
         public override void Update(GameTime gameTime)
         {
             if (LoadingManager.IsLoading)
                 return;
+
+            sprite.Update(gameTime);
 
             if (Game.Input.IsLeftMouseButtonPressed())
             {
@@ -63,7 +81,6 @@ namespace ProjectISO.Levels
 
             }
 
-           
             if (Game.Input.IsVirtualButtonDown("ZoomIn"))
             {
                 Camera.Zooom += (float)gameTime.ElapsedGameTime.TotalSeconds;
