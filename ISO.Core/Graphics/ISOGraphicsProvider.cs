@@ -24,7 +24,7 @@ namespace ISO.Core.Graphics
 
         public int FrameCap { get; }
 
-        public ISOGraphicsProvider(Game game, int width, int height, bool vsync, int frameCap) : base(game)
+        public ISOGraphicsProvider(Game game, int width, int height, bool vsync, int frameCap, bool sleepInBackground) : base(game)
         {
             CurrentWidth = width;
             CurrentHeight = height;
@@ -43,6 +43,10 @@ namespace ISO.Core.Graphics
                 this.SynchronizeWithVerticalRetrace = true;
             }
 
+            if (sleepInBackground == false)
+            {
+                game.InactiveSleepTime = TimeSpan.Zero;
+            }
 
             if (frameCap > 0)
             {

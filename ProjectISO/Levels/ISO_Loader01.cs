@@ -62,8 +62,7 @@ namespace ProjectISO.Levels
 
             sprite.DestinationRectangle = new Rectangle(50, 800, 64, 96);
             base.AfterLoadContent(manager);
-
-            Particles.SetEmitterPosition("particle", new Point(500, 500));
+            
             Corountines.StartCoroutine(Emmit());
 
         }
@@ -86,7 +85,9 @@ namespace ProjectISO.Levels
         {
             if (LoadingManager.IsLoading)
                 return;
-
+           
+            particle.SetEmitterPosition(Camera.ScreenToWorldSpace(Game.Input.MousePosition.ToVector2()).ToPoint());
+            
             sprite.Update(gameTime);
 
             if (Game.Input.IsLeftMouseButtonPressed())

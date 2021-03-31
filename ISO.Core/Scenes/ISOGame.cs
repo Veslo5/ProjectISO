@@ -42,7 +42,7 @@ namespace ISO.Core.Scenes
         {
             Config = config;
             SceneManager = new SceneController(this);
-            Graphics = new ISOGraphicsProvider(this, config.Width, config.Height, config.Vsync, config.FrameCap);
+            Graphics = new ISOGraphicsProvider(this, config.Width, config.Height, config.Vsync, config.FrameCap, config.SleepInBackground);
             Input = new InputController();
 
             Content = new ISOContentProvider(base.Content.ServiceProvider);

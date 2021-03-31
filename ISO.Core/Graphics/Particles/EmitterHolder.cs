@@ -26,9 +26,14 @@ namespace ISO.Core.Graphics.Particles
 
         public void Emmit() => Emitter.Emit = true;
 
+        public void SetEmitterPosition(Point position)
+        {
+            Emitter.UpdateOwnerPos(position.X, position.Y);
+        }
+
         internal void Update(GameTime gameTime)
         {
-            Emitter.Update(gameTime.ElapsedGameTime.Milliseconds * 0.001f); // 0.001f is magical number used in official docs
+            Emitter.Update((float)gameTime.ElapsedGameTime.TotalSeconds); // 0.001f is magical number used in official docs
         }
 
         internal void Draw(GameTime gameTime, SpriteBatch spriteBatch)

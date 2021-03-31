@@ -43,11 +43,6 @@ namespace ISO.Core.Graphics.Particles
             return emitterContainer[name.ToUpper()];
         }
 
-        public void SetEmitterPosition(string name, Point position)
-        {
-            emitterContainer[name.ToUpper()].Emitter.UpdateOwnerPos(position.X, position.Y);
-        }
-
         #region Overrides
         internal override void Update(GameTime gameTime)
         {

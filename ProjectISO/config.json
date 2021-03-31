@@ -6,5 +6,6 @@
   "DataInit": false,
   "Vsync": false,
   "FrameCap": -1,
-  "VirtualResolution" : false
+  "VirtualResolution": false,
+  "SleepInBackground":  true
 }

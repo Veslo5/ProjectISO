@@ -42,6 +42,10 @@
         /// </summary>
         public bool VirtualResolution { get; set; }
 
+        /// <summary>
+        /// Lower fps when window not fully focused
+        /// </summary>
+        public bool SleepInBackground { get; set; }
 
     }
 }
