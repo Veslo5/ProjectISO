@@ -55,7 +55,7 @@ namespace ISO.Core.Data.DataLoader
         /// <param name="assetName"></param>
         public void RemoveCachedAsset(string assetName)
         {
-            this.LoadedAssets.Remove(assetName);
+            this.LoadedAssets.Remove(assetName.Replace('\\', '/'));
         }
 
         /// <summary>

@@ -44,6 +44,18 @@
 /processorParam:TextureFormat=Color
 /build:MAP/TILESET/GROUND.png
 
+#begin MAP/TILESET/OFFSET.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:MAP/TILESET/OFFSET.png
+
 #begin MAP/TILESET/WALL.png
 /importer:TextureImporter
 /processor:TextureProcessor
@@ -66,7 +78,7 @@
 /processorParam:ResizeToPowerOfTwo=False
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
-/build:PARTICLES/PARTICLE.png;PARTICLES/PARTICLE.png
+/build:PARTICLES/PARTICLE.png
 
 #begin UI/Slice9.png
 /importer:TextureImporter

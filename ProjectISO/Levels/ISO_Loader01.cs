@@ -18,11 +18,10 @@ namespace ProjectISO.Levels
     {
         public ISO_Loader01(string name, int id, ISOGame game, bool enableLuaScripting) : base(name, id, game, enableLuaScripting)
         {
-        }
-
-        RectagleSprite testRectangle;
+        }        
 
         AnimatedSprite sprite;
+        EmitterHolder particle;
 
         public override void Initialize()
         {
@@ -31,39 +30,29 @@ namespace ProjectISO.Levels
             LoadingManager.AfterLoadCallback = AfterLoadContent;
         }
 
-        EmitterHolder particle;
-        public IEnumerator Emmit()
-        {
-            while (true)
-            {
-                particle.Emmit();
-                yield return 1000.0;
-            }
-        }
+
 
         public override void LoadContent()
         {
             base.LoadContent();
 
             Particles.PreloadParticles("particle");
-            particle = Particles.GetParticleHolder("particle");
+            particle = Particles.GetParticleHolder("particle");            
             
-
             LoadingManager.Load<TextureAsset>("Animation", System.IO.Path.Combine("MAP", "OBJECT", "Pylon"));
 
-            LoadingManager.StartLoadingAsync();
-            testRectangle = new RectagleSprite(Color.Red, Game.GraphicsDevice, new Rectangle(0, 0, 100, 100));
+            LoadingManager.StartLoadingAsync();            
 
         }
 
         public override void AfterLoadContent(LoadingController manager)
         {
             sprite = new AnimatedSprite(manager.GetTexture("Animation").Texture, 5, 4, 100f);
-
             sprite.DestinationRectangle = new Rectangle(50, 800, 64, 96);
+
             base.AfterLoadContent(manager);
-            
-            Corountines.StartCoroutine(Emmit());
+                        
+            particle.Emmit();
 
         }
 
@@ -86,8 +75,9 @@ namespace ProjectISO.Levels
             if (LoadingManager.IsLoading)
                 return;
            
-            particle.SetEmitterPosition(Camera.ScreenToWorldSpace(Game.Input.MousePosition.ToVector2()).ToPoint());
-            
+            particle.SetEmitterPosition(Camera.ScreenToWorldSpace(Game.Input.MousePosition.ToVector2()).ToPoint());            
+
+
             sprite.Update(gameTime);
 
             if (Game.Input.IsLeftMouseButtonPressed())
